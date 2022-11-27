@@ -5,6 +5,7 @@ import snecs.bound_world
 import tcod
 
 import g
+import game.states
 
 
 def main() -> None:
@@ -18,14 +19,13 @@ def main() -> None:
         vsync=True,
     ) as g.context:
         g.world = snecs.bound_world.BoundWorld()
+        g.state = game.states.HelloWorld()
         while True:
             console = g.context.new_console()
-            console.print(0, 0, "Hello world.")
+            g.state.on_draw(console)
             g.context.present(console, keep_aspect=True, integer_scaling=True)
             for event in tcod.event.wait():
-                match event:
-                    case tcod.event.Quit():
-                        raise SystemExit()
+                g.state.on_event(event)
 
 
 if __name__ == "__main__":
