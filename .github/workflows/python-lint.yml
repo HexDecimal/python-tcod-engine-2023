@@ -1,0 +1,60 @@
+# This workflow will install Python dependencies and run some static tests.
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install black
+        run: |
+          python -m pip install black
+      - name: Black
+        run: |
+          black --check .
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install isort
+        run: |
+          python -m pip install isort
+      - name: isort
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: isort
+          run: isort --check .
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install Python dependencies
+        run: |
+          python -m pip install flake8 mypy -r requirements.txt
+      - name: Mypy
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: mypy
+          run: mypy --show-column-numbers .
+      - name: Flake8
+        if: always() # Run even if Mypy fails.
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: flake8
+          run: flake8 .
