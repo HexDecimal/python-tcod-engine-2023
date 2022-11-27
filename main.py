@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import logging
 
+import snecs.bound_world
 import tcod
+
+import g
 
 
 def main() -> None:
@@ -13,11 +16,12 @@ def main() -> None:
         height=720,
         title=None,
         vsync=True,
-    ) as context:
+    ) as g.context:
+        g.world = snecs.bound_world.BoundWorld()
         while True:
-            console = context.new_console()
+            console = g.context.new_console()
             console.print(0, 0, "Hello world.")
-            context.present(console, keep_aspect=True, integer_scaling=True)
+            g.context.present(console, keep_aspect=True, integer_scaling=True)
             for event in tcod.event.wait():
                 match event:
                     case tcod.event.Quit():
