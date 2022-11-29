@@ -1,15 +1,12 @@
-from snecs import Component, register_component
-from snecs.typedefs import EntityID
+import game.entity
 
 
-@register_component
-class Globals(Component):
-    active_map: EntityID = EntityID(0)
-    player: EntityID = EntityID(0)
+class Context:
+    active_map: game.entity.Entity
+    player: game.entity.Entity
 
 
-@register_component
-class Position(Component):
+class Position:
     __slots__ = ("x", "y")
 
     def __init__(self, x: int, y: int) -> None:

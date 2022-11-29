@@ -1,3 +1,2 @@
 tcod>=13.8.1
 numpy>=1.23.5
-git+https://github.com/HexDecimal/snecs.git@bound-world

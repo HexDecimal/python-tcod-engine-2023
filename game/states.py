@@ -1,8 +1,7 @@
-import snecs
 import tcod
 
 import g
-from game.components import Globals, Position
+from game.components import Context, Position
 from game.state import State
 
 MOVE_KEYS = {
@@ -45,13 +44,10 @@ WAIT_KEYS = {
 
 class HelloWorld(State):
     def on_event(self, event: tcod.event.Event) -> None:
-        ctx = g.world.entity_component(g.world.context, Globals)
-        assert isinstance(ctx, Globals)
-        player_pos = g.world.entity_component(ctx.player, Position)
-        assert isinstance(player_pos, Position)
         match event:
             case tcod.event.KeyDown(sym=sym):
                 if sym in MOVE_KEYS:
+                    player_pos = g.world[Context].player[Position]
                     dx, dy = MOVE_KEYS[sym]
                     player_pos.x += dx
                     player_pos.y += dy
@@ -59,6 +55,5 @@ class HelloWorld(State):
                 raise SystemExit()
 
     def on_draw(self, console: tcod.Console) -> None:
-        for i, (pos,) in snecs.Query((Position,), world=g.world):
-            assert isinstance(pos, Position)
-            console.print(pos.x, pos.y, "@")
+        pos = g.world[Context].player[Position]
+        console.print(pos.x, pos.y, "@")
