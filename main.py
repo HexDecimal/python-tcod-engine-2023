@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import logging
 
-import snecs.bound_world
 import tcod
 
 import g
 import game.states
+import game.world_tools
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
         title=None,
         vsync=True,
     ) as g.context:
-        g.world = snecs.bound_world.BoundWorld()
+        g.world = game.world_tools.new_world()
         g.state = game.states.HelloWorld()
         while True:
             console = g.context.new_console()
