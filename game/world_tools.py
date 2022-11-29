@@ -3,7 +3,7 @@ from game.entity import Entity
 
 
 def new_world() -> Entity:
-    world = Entity([Context()])
+    world = Entity(Context())
     ctx = world[Context]
-    ctx.player = Entity([Position(0, 0)])
+    ctx.player = Entity(Position(0, 0))
     return world

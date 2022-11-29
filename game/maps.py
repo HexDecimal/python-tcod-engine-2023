@@ -20,9 +20,15 @@ class Map:
 
     >>> map = Map(10, 10)
     >>> tiles = MapAttribute("tiles", np.uint8)  # Define new attribute.
+    >>> tiles in map
+    False
     >>> map[tiles][:] = 1
-    >>> assert map[tiles].shape == (10, 10)
-    >>> assert map[tiles][0, 0] == 0
+    >>> tiles in map
+    True
+    >>> map[tiles].shape
+    (10, 10)
+    >>> map[tiles][0, 0]
+    1
     >>> monster = {"my_explored_attr": MapAttribute(None, np.bool8)}  # Define anonymous attribute.
     >>> map[monster["my_explored_attr"]][:] = 0
     """
@@ -31,7 +37,7 @@ class Map:
         self.width, self.height = width, height
         self._data: Dict[Hashable, NDArray[Any]] = {}
 
-    def __hasitem__(self, attr: MapAttribute) -> bool:
+    def __contains__(self, attr: MapAttribute) -> bool:
         if attr.key not in self._data:
             return False
         assert self._data[attr.key].dtype == attr.dtype
