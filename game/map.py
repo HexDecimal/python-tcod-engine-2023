@@ -16,7 +16,7 @@ class MapAttribute:
 
 
 class Map:
-    """A genric map array container.
+    """A generic map array container.
 
     >>> map = Map(10, 10)
     >>> tiles = MapAttribute("tiles", np.uint8)  # Define new attribute.
@@ -45,7 +45,7 @@ class Map:
 
     def __getitem__(self, attr: MapAttribute) -> NDArray[Any]:
         if attr.key not in self._data:
-            self._data[attr.key] = np.full((self.width, self.height), fill_value=attr.default, dtype=attr.dtype)
+            self._data[attr.key] = np.full((self.height, self.width), fill_value=attr.default, dtype=attr.dtype)
         array = self._data[attr.key]
         assert array.dtype == attr.dtype
         return array

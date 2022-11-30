@@ -1,9 +1,9 @@
-import game.entity
+from game.entity import Entity
 
 
 class Context:
-    active_map: game.entity.Entity
-    player: game.entity.Entity
+    active_map: Entity
+    player: Entity
 
 
 class Position:

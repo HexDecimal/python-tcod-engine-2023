@@ -20,5 +20,16 @@
     ],
     "files.associations": {
         "*.spec": "python"
-    }
+    },
+    "cSpell.words": [
+        "dejavu",
+        "dtype",
+        "Numpad",
+        "PAGEDOWN",
+        "PAGEUP",
+        "tcod",
+        "tileset",
+        "tilesheet",
+        "vsync"
+    ]
 }

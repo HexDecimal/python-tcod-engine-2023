@@ -2,7 +2,10 @@ import tcod
 
 import g
 from game.components import Context, Position
+from game.map import Map
+from game.map_attrs import a_tiles
 from game.state import State
+from game.tiles import tiles_db
 
 MOVE_KEYS = {
     # Arrow keys.
@@ -49,11 +52,18 @@ class HelloWorld(State):
                 if sym in MOVE_KEYS:
                     player_pos = g.world[Context].player[Position]
                     dx, dy = MOVE_KEYS[sym]
-                    player_pos.x += dx
-                    player_pos.y += dy
+                    new_x, new_y = player_pos.x + dx, player_pos.y + dy
+                    if tiles_db["walk_cost"][g.world[Context].active_map[Map][a_tiles][new_y, new_x]] > 0:
+                        player_pos.x += dx
+                        player_pos.y += dy
             case tcod.event.Quit():
                 raise SystemExit()
 
     def on_draw(self, console: tcod.Console) -> None:
+        map = g.world[Context].active_map[Map]
+        right = min(map.width, console.width)
+        bottom = min(map.height, console.height)
+        console.tiles_rgb[:bottom, :right] = tiles_db["graphic"][map[a_tiles][:bottom, :right]]
+
         pos = g.world[Context].player[Position]
         console.print(pos.x, pos.y, "@")
