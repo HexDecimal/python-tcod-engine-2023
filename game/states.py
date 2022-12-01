@@ -1,6 +1,7 @@
 import tcod
 
 import g
+from game.camera import get_views
 from game.components import Context, Position
 from game.map import Map
 from game.map_attrs import a_tiles
@@ -61,9 +62,9 @@ class HelloWorld(State):
 
     def on_draw(self, console: tcod.Console) -> None:
         map = g.world[Context].active_map[Map]
-        right = min(map.width, console.width)
-        bottom = min(map.height, console.height)
-        console.tiles_rgb[:bottom, :right] = tiles_db["graphic"][map[a_tiles][:bottom, :right]]
-
         pos = g.world[Context].player[Position]
-        console.print(pos.x, pos.y, "@")
+        camera_ij = (pos.y - console.height // 2, pos.x - console.width // 2)
+        screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
+        screen_view[:] = tiles_db["graphic"][world_view]
+
+        console.print(pos.x - camera_ij[1], pos.y - camera_ij[0], "@")
