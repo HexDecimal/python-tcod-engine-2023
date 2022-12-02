@@ -5,6 +5,8 @@ T = TypeVar("T")
 
 
 class Entity:
+    __slots__ = ("_components", "__weakref__")
+
     def __init__(self, *components: T):
         self._components = dict[Type[T], T]()
         self.set(*components)

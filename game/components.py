@@ -1,7 +1,10 @@
+import attrs
+
 from game.entity import Entity
 from game.sched import TurnQueue
 
 
+@attrs.define
 class Context:
     active_map: Entity
     player: Entity
@@ -13,25 +16,22 @@ class Context:
         self.actors = []
 
 
+@attrs.define
 class Position:
-    __slots__ = ("x", "y")
-
-    def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
+    x: int = 0
+    y: int = 0
 
     def set(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
 
 
+@attrs.define
 class Graphic:
-    __slots__ = ("ch", "fg")
-
-    def __init__(self, ch: int = ord("?"), fg: tuple[int, int, int] = (255, 255, 255)) -> None:
-        self.ch = ch
-        self.fg = fg
+    ch: int = ord("?")
+    fg: tuple[int, int, int] = (255, 255, 255)
 
 
+@attrs.define
 class Player:
-    __slots__ = ()
+    pass
