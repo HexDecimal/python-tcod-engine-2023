@@ -1,3 +1,4 @@
+import reprlib
 from typing import Optional, Type, TypeVar
 
 T = TypeVar("T")
@@ -34,6 +35,6 @@ class Entity:
         """Return true if a type of component exists in this entity."""
         return key in self._components
 
+    @reprlib.recursive_repr()
     def __repr__(self) -> str:
-        items = ", ".join(repr(c) for c in self._components.values())
-        return f"Entity({items})"
+        return f"""Entity({", ".join(repr(component) for component in self._components.values())})"""
