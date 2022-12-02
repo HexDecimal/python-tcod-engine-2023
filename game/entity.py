@@ -7,13 +7,18 @@ T = TypeVar("T")
 class Entity:
     def __init__(self, *components: T):
         self._components = dict[Type[T], T]()
-        for c in components:
-            self.add(c)
+        self.set(*components)
 
-    def add(self, component: T) -> None:
-        """Add a component to this entity."""
-        assert component.__class__ not in self._components
-        self._components[component.__class__] = component
+    def add(self, *components: T) -> None:
+        """Add components to this entity."""
+        for component in components:
+            assert component.__class__ not in self._components
+            self._components[component.__class__] = component
+
+    def set(self, *components: T) -> None:
+        """Assign or replace the components of this entity."""
+        for component in components:
+            self._components[component.__class__] = component
 
     def get(self, kind: Type[T]) -> Optional[T]:
         """Return a component, or None if it doesn't exist."""
