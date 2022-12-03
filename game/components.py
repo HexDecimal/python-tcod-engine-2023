@@ -1,4 +1,5 @@
 import attrs
+from attrs import Factory, field
 
 from game.entity import Entity
 from game.sched import TurnQueue
@@ -6,14 +7,10 @@ from game.sched import TurnQueue
 
 @attrs.define
 class Context:
-    active_map: Entity
-    player: Entity
-    sched: TurnQueue[Entity]
-    actors: list[Entity]
-
-    def __init__(self) -> None:
-        self.sched = TurnQueue()
-        self.actors = []
+    active_map: Entity = field(init=False)
+    player: Entity = field(init=False)
+    sched: TurnQueue[Entity] = Factory(TurnQueue)
+    actors: set[Entity] = Factory(set)
 
 
 @attrs.define
