@@ -1,7 +1,7 @@
 import tcod
 
 import g
-from game.camera import get_views
+from game.camera import clamp_camera, get_views
 from game.components import Context, Graphic, Position
 from game.map import Map
 from game.map_attrs import a_tiles
@@ -67,6 +67,7 @@ class InGame(State):
         map = g.world[Context].active_map[Map]
         player_pos = g.world[Context].player[Position]
         camera_ij = (player_pos.y - console.height // 2, player_pos.x - console.width // 2)
+        camera_ij = clamp_camera((console.height, console.width), (map.height, map.width), camera_ij)
         screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
         screen_view[:] = tiles_db["graphic"][world_view]
 

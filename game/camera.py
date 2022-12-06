@@ -55,3 +55,20 @@ def get_views(
     """Return (screen_view, world_view) for the given parameters."""
     screen_slice, world_slice = get_slices(screen.shape, world.shape, camera_pos)
     return screen[screen_slice], world[world_slice]  # type: ignore[return-value]
+
+
+def clamp_camera_1d(screen_width: int, world_width: int, camera_pos: int, justify: float) -> int:
+    right_bound = max(0, world_width - screen_width)
+    screen_padding = max(0, screen_width - world_width)
+    camera_pos = min(max(0, camera_pos), right_bound)
+    camera_pos -= int(screen_padding * justify)
+    return camera_pos
+
+
+def clamp_camera(
+    screen: tuple[int, int], world: tuple[int, int], camera: tuple[int, int], justify: tuple[float, float] = (0, 0)
+) -> tuple[int, int]:
+    return (
+        clamp_camera_1d(screen[0], world[0], camera[0], justify[0]),
+        clamp_camera_1d(screen[1], world[1], camera[1], justify[1]),
+    )
