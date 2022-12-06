@@ -20,7 +20,7 @@ class Tile(NamedTuple):
 
 tiles_db = np.array(
     [
-        Tile(graphic=(ord(" "), (0xFF, 0xFF, 0xFF), (0x0, 0x0, 0x0)), transparent=True, walk_cost=1),
+        Tile(graphic=(ord("."), (0x44, 0x44, 0x44), (0x0, 0x0, 0x0)), transparent=True, walk_cost=1),
         Tile(graphic=(ord(" "), (0xFF, 0xFF, 0xFF), (0x88, 0x88, 0x88)), transparent=False, walk_cost=0),
     ],
     dtype=TILE_DTYPE,
