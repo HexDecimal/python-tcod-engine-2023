@@ -1,7 +1,7 @@
 import tcod
+from tcod.camera import clamp_camera, get_views
 
 import g
-from game.camera import clamp_camera, get_views
 from game.components import Context, Graphic, Position
 from game.map import Map
 from game.map_attrs import a_tiles
