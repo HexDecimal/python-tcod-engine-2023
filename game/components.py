@@ -1,16 +1,16 @@
 import attrs
 from attrs import Factory, field
+from tcod.ec import ComponentDict
 
-from game.entity import Entity
 from game.sched import TurnQueue
 
 
 @attrs.define
 class Context:
-    active_map: Entity = field(init=False)
-    player: Entity = field(init=False)
-    sched: TurnQueue[Entity] = Factory(TurnQueue)
-    actors: set[Entity] = Factory(set)
+    active_map: ComponentDict = field(init=False)
+    player: ComponentDict = field(init=False)
+    sched: TurnQueue[ComponentDict] = Factory(TurnQueue)
+    actors: set[ComponentDict] = Factory(set)
 
 
 @attrs.define
