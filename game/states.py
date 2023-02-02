@@ -66,7 +66,7 @@ class InGame(State):
     def on_draw(self, console: tcod.Console) -> None:
         map = g.world[Context].active_map[Map]
         player_pos = g.world[Context].player[Position]
-        camera_ij = (player_pos.y - console.height // 2, player_pos.x - console.width // 2)
+        camera_ij: tuple[int, ...] = (player_pos.y - console.height // 2, player_pos.x - console.width // 2)
         camera_ij = clamp_camera((console.height, console.width), (map.height, map.width), camera_ij)
         screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
         screen_view[:] = tiles_db["graphic"][world_view]
