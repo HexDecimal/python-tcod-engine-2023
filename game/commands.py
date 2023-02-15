@@ -24,6 +24,8 @@ class InGame(Enum):
     MOVE_W = MoveDir(-1, 0)
     MOVE_NW = MoveDir(-1, -1)
     WAIT = "WAIT"
+    UP_STAIRS = "<"
+    DOWN_STAIRS = ">"
 
 
 # Arrow keys.
@@ -59,3 +61,6 @@ keybindings.add_bind(InGame.MOVE_SE, Bind(sym=KeySym.n))
 keybindings.add_bind(InGame.WAIT, Bind(sym=KeySym.PERIOD))
 keybindings.add_bind(InGame.WAIT, Bind(sym=KeySym.KP_5))
 keybindings.add_bind(InGame.WAIT, Bind(sym=KeySym.CLEAR))
+
+keybindings.add_bind(InGame.UP_STAIRS, Bind(sym=KeySym.COMMA, shift=True))
+keybindings.add_bind(InGame.DOWN_STAIRS, Bind(sym=KeySym.PERIOD, shift=True))

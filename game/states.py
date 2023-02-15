@@ -2,11 +2,11 @@ import tcod
 from tcod.camera import clamp_camera, get_views
 
 import g
+import game.actions
 import game.commands
-from game.components import Context, Graphic, Position
+from game.components import Context, Direction, Graphic, MapFeatures, Position
 from game.map import Map
 from game.map_attrs import a_tiles
-from game.sched import Ticket
 from game.state import State
 from game.tiles import tiles_db
 
@@ -17,19 +17,16 @@ class InGame(State):
             case tcod.event.KeyDown():
                 command = game.commands.keybindings.parse(event=event, enum=game.commands.InGame)
                 if command:
-                    self.on_command(command)
+                    return self.on_command(command)
             case tcod.event.Quit():
                 raise SystemExit()
 
     def on_command(self, command: game.commands.InGame) -> None:
         match command.value:
             case game.commands.MoveDir(x=dx, y=dy):
-                player_pos = g.world[Context].player[Position]
-                new_x, new_y = player_pos.x + dx, player_pos.y + dy
-                if tiles_db["walk_cost"][g.world[Context].active_map[Map][a_tiles][new_y, new_x]] > 0:
-                    player_pos.x += dx
-                    player_pos.y += dy
-                    g.world[Context].player[Ticket] = g.world[Context].sched.schedule(100, g.world[Context].player)
+                game.actions.Bump([Direction(dx, dy)]).perform(g.world, g.world[Context].player)
+            case ">":
+                pass
 
     def on_draw(self, console: tcod.Console) -> None:
         map = g.world[Context].active_map[Map]
@@ -39,6 +36,14 @@ class InGame(State):
         screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
         screen_view[:] = tiles_db["graphic"][world_view]
 
+        for feature in g.world[Context].active_map[MapFeatures].features:
+            pos = feature[Position]
+            screen_x = pos.x - camera_ij[1]
+            screen_y = pos.y - camera_ij[0]
+            if 0 <= screen_x < console.width and 0 <= screen_y < console.height:
+                graphic = feature[Graphic]
+                console.tiles_rgb[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
+
         for actor in g.world[Context].actors:
             pos = actor[Position]
             screen_x = pos.x - camera_ij[1]
@@ -46,3 +51,5 @@ class InGame(State):
             if 0 <= screen_x < console.width and 0 <= screen_y < console.height:
                 graphic = actor[Graphic]
                 console.tiles_rgb[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
+
+        console.print(0, 0, f"Turn: {g.world[Context].sched.time}", fg=(255, 255, 255))
