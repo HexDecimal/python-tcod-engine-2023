@@ -1,3 +1,5 @@
+import itertools
+
 import tcod
 from tcod.camera import clamp_camera, get_views
 
@@ -36,20 +38,15 @@ class InGame(State):
         screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
         screen_view[:] = tiles_db["graphic"][world_view]
 
-        for feature in g.world[Context].active_map[MapFeatures].features:
-            pos = feature[Position]
+        for obj in itertools.chain(
+            g.world[Context].active_map[MapFeatures].features,
+            g.world[Context].actors,
+        ):
+            pos = obj[Position]
             screen_x = pos.x - camera_ij[1]
             screen_y = pos.y - camera_ij[0]
             if 0 <= screen_x < console.width and 0 <= screen_y < console.height:
-                graphic = feature[Graphic]
-                console.tiles_rgb[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
-
-        for actor in g.world[Context].actors:
-            pos = actor[Position]
-            screen_x = pos.x - camera_ij[1]
-            screen_y = pos.y - camera_ij[0]
-            if 0 <= screen_x < console.width and 0 <= screen_y < console.height:
-                graphic = actor[Graphic]
+                graphic = obj[Graphic]
                 console.tiles_rgb[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
 
         console.print(0, 0, f"Turn: {g.world[Context].sched.time}", fg=(255, 255, 255))
