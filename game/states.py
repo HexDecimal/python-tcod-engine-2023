@@ -4,11 +4,14 @@ import tcod
 from tcod.camera import clamp_camera, get_views
 
 import g
+import game.action
 import game.actions
 import game.commands
+import game.world_logic
 from game.components import Context, Direction, Graphic, MapFeatures, Position
 from game.map import Map
 from game.map_attrs import a_tiles
+from game.sched import Ticket
 from game.state import State
 from game.tiles import tiles_db
 
@@ -26,9 +29,22 @@ class InGame(State):
     def on_command(self, command: game.commands.InGame) -> None:
         match command.value:
             case game.commands.MoveDir(x=dx, y=dy):
-                game.actions.Bump([Direction(dx, dy)]).perform(g.world, g.world[Context].player)
+                self.do_action(game.actions.Bump([Direction(dx, dy)]))
             case ">":
                 pass
+
+    def do_action(self, action: game.action.Action) -> None:
+        world = g.world
+        player = world[Context].player
+        match action.perform(world, player):
+            case game.action.Success(time_passed=time_passed):
+                assert world[Context].sched.peek() is player[Ticket]
+                world[Context].sched.pop()
+                player[Ticket] = world[Context].sched.schedule(time_passed, player)
+            case game.action.Impossible(reason=reason):
+                print(reason)
+            case _:
+                raise NotImplementedError()
 
     def on_draw(self, console: tcod.Console) -> None:
         map = g.world[Context].active_map[Map]
