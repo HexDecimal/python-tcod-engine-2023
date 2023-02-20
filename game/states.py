@@ -31,7 +31,9 @@ class InGame(State):
             case game.commands.MoveDir(x=dx, y=dy):
                 self.do_action(game.actions.Bump([Direction(dx, dy)]))
             case ">":
-                pass
+                self.do_action(game.actions.UseStairs(["down"]))
+            case "<":
+                self.do_action(game.actions.UseStairs(["up"]))
 
     def do_action(self, action: game.action.Action) -> None:
         world = g.world

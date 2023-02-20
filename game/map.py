@@ -1,7 +1,9 @@
 from typing import Any, Dict, Hashable, Optional, TypeVar
 
+import attrs
 import numpy as np
 from numpy.typing import DTypeLike, NDArray
+from tcod.ec import ComponentDict
 
 T = TypeVar("T")
 
@@ -56,3 +58,9 @@ class Map:
 
     def __delitem__(self, attr: MapAttribute) -> None:
         del self._data[attr.key]
+
+
+@attrs.define(frozen=True)
+class MapKey:
+    def generate(self, world: ComponentDict) -> ComponentDict:
+        raise NotImplementedError()

@@ -6,6 +6,7 @@ import attrs
 from attrs import Factory, field
 from tcod.ec import ComponentDict
 
+from game.map import MapKey
 from game.sched import TurnQueue
 
 
@@ -61,11 +62,16 @@ class Player:
     pass
 
 
-@attrs.define(frozen=True)
+@attrs.define(frozen=True, kw_only=True)
 class Stairway:
-    destination: tuple[str, int]
+    down: MapKey | None = None
+    up: MapKey | None = None
 
 
 @attrs.define()
 class MapFeatures:
     features: list[ComponentDict] = Factory(list)
+
+
+class MapDict(dict[MapKey, ComponentDict]):
+    pass
