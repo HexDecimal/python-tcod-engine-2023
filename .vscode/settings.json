@@ -24,8 +24,10 @@
     "cSpell.words": [
         "argmax",
         "argwhere",
+        "astype",
         "dejavu",
         "dtype",
+        "getnewargs",
         "KMOD",
         "mapgen",
         "ndimage",

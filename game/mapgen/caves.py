@@ -11,6 +11,7 @@ import game.map_tools
 from game import map_attrs
 from game.components import Graphic, MapFeatures, Position, Stairway
 from game.map import Map, MapKey
+from game.tiles import TileDB
 
 
 def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
@@ -27,10 +28,11 @@ class CaveMap(MapKey):
 
     def generate(self, world: ComponentDict) -> ComponentDict:
         assert self.level > 0
+        tiles_db = world[TileDB]
         rng = np.random.default_rng()
 
-        map = game.map_tools.new_map(50, 50)
-        walls = np.zeros((50 - 2, 50 - 2), bool)
+        map = game.map_tools.new_map(world, 50, 50)
+        walls = np.zeros((map[Map].height - 2, map[Map].width - 2), bool)
 
         walls.ravel()[: walls.size * 45 // 100] = 1
         rng.shuffle(walls.ravel())
@@ -58,8 +60,8 @@ class CaveMap(MapKey):
 
         walls = np.pad(walls, 1, constant_values=True)
 
-        map[Map][map_attrs.a_tiles][:] = walls
-        free_spaces_ = np.argwhere(map[Map][map_attrs.a_tiles].T == 0)
+        map[Map][map_attrs.a_tiles][:] = np.array([tiles_db["floor"], tiles_db["wall"]])[walls.astype(int)]
+        free_spaces_ = np.argwhere(walls.T == 0)
         rng.shuffle(free_spaces_)
         free_spaces = free_spaces_.tolist()
 

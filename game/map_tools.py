@@ -8,6 +8,7 @@ import game.mapgen.caves
 from game import map_attrs
 from game.components import Context, Graphic, MapDict, MapFeatures, Position, Stairway
 from game.map import Map, MapKey
+from game.tiles import TileDB
 
 
 @attrs.define(frozen=True)
@@ -15,7 +16,7 @@ class TestMap(MapKey):
     level: int = 0
 
     def generate(self, world: ComponentDict) -> ComponentDict:
-        map = new_map(50, 50)
+        map = new_map(world, 50, 50)
         free_spaces = list(itertools.product(range(1, 9), range(1, 9)))
         random.shuffle(free_spaces)
         map[MapFeatures] = MapFeatures(
@@ -37,10 +38,11 @@ class TestMap(MapKey):
         return map
 
 
-def new_map(width: int, height: int) -> ComponentDict:
+def new_map(world: ComponentDict, width: int, height: int) -> ComponentDict:
+    tile_db = world[TileDB]
     map = Map(width, height)
-    map[map_attrs.a_tiles][:] = 1
-    map[map_attrs.a_tiles][1:-1, 1:-1] = 0
+    map[map_attrs.a_tiles][:] = tile_db["wall"]
+    map[map_attrs.a_tiles][1:-1, 1:-1] = tile_db["floor"]
     map_entity = ComponentDict([map])
     map_entity[MapFeatures] = MapFeatures()
     return map_entity

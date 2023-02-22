@@ -13,7 +13,7 @@ from game.map import Map
 from game.map_attrs import a_tiles
 from game.sched import Ticket
 from game.state import State
-from game.tiles import tiles_db
+from game.tiles import TileDB
 
 
 class InGame(State):
@@ -50,11 +50,12 @@ class InGame(State):
 
     def on_draw(self, console: tcod.Console) -> None:
         map = g.world[Context].active_map[Map]
+        tiles_db = g.world[TileDB]
         player_pos = g.world[Context].player[Position]
         camera_ij: tuple[int, ...] = (player_pos.y - console.height // 2, player_pos.x - console.width // 2)
         camera_ij = clamp_camera((console.height, console.width), (map.height, map.width), camera_ij)
         screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
-        screen_view[:] = tiles_db["graphic"][world_view]
+        screen_view[:] = tiles_db.data["graphic"][world_view]
 
         for obj in itertools.chain(
             g.world[Context].active_map[MapFeatures].features,
