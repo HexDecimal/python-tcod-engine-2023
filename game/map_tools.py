@@ -1,8 +1,10 @@
+import itertools
 import random
 
 import attrs
 from tcod.ec import ComponentDict
 
+import game.mapgen.caves
 from game import map_attrs
 from game.components import Context, Graphic, MapDict, MapFeatures, Position, Stairway
 from game.map import Map, MapKey
@@ -14,26 +16,22 @@ class TestMap(MapKey):
 
     def generate(self, world: ComponentDict) -> ComponentDict:
         map = new_map(50, 50)
+        free_spaces = list(itertools.product(range(1, 9), range(1, 9)))
+        random.shuffle(free_spaces)
         map[MapFeatures] = MapFeatures(
             [
                 ComponentDict(
                     [
-                        Position(random.randint(1, 48), random.randint(1, 48)),
+                        Position(*free_spaces.pop()),
                         Graphic(ord(">")),
-                        Stairway(down=TestMap(self.level + 1)),
+                        Stairway(down=game.mapgen.caves.CaveMap(self.level + 1)),
                     ]
                 ),
             ]
         )
         if self.level > 0:
             map[MapFeatures].features.append(
-                ComponentDict(
-                    [
-                        Position(random.randint(1, 48), random.randint(1, 48)),
-                        Graphic(ord("<")),
-                        Stairway(up=TestMap(self.level - 1)),
-                    ]
-                )
+                ComponentDict([Position(*free_spaces.pop()), Graphic(ord("<")), Stairway(up=TestMap(self.level - 1))])
             )
         print(map[MapFeatures])
         return map

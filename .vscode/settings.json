@@ -22,13 +22,18 @@
         "*.spec": "python"
     },
     "cSpell.words": [
+        "argmax",
+        "argwhere",
         "dejavu",
         "dtype",
         "KMOD",
+        "mapgen",
+        "ndimage",
         "Numpad",
         "PAGEDOWN",
         "PAGEUP",
         "scancode",
+        "scipy",
         "tcod",
         "tileset",
         "tilesheet",

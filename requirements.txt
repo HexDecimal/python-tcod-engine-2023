@@ -4,3 +4,4 @@ tcod-camera~=1.0
 tcod-ec~=2.0
 toml>=0.10.2
 numpy>=1.23.5
+scipy>=1.10.1

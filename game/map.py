@@ -53,7 +53,7 @@ class Map:
         return array
 
     def __setitem__(self, attr: MapAttribute, array: NDArray[Any]) -> None:
-        assert attr.dtype == array.dtype
+        assert attr.dtype == array.dtype, "Consider adding [:] for full array assignment."
         self._data[attr.key] = array
 
     def __delitem__(self, attr: MapAttribute) -> None:
