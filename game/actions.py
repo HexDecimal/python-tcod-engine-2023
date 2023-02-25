@@ -2,9 +2,10 @@ from typing import Iterator
 
 from tcod.ec import ComponentDict
 
+import game.actor_tools
 import game.map_tools
 from game.action import Action, ActionResult, Impossible, Success
-from game.components import Context, Direction, MapFeatures, Position, Stairway
+from game.components import Context, Direction, MapFeatures, Player, Position, Stairway
 from game.map import Map
 from game.map_attrs import a_tiles
 from game.tiles import TileDB
@@ -16,6 +17,8 @@ class Bump(Action):
         dest = actor[Position] + self.data[Direction]
         if world[TileDB].data["walk_cost"][context.active_map[Map][a_tiles][dest.yx]] > 0:
             actor[Position] = dest
+            if Player in actor:
+                game.actor_tools.compute_fov(world, actor)
             return Success(time_passed=100)
         return Impossible("Blocked.")
 

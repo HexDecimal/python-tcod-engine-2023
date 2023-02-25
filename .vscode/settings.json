@@ -36,6 +36,7 @@
         "PAGEUP",
         "scancode",
         "scipy",
+        "SHADOWCAST",
         "tcod",
         "tileset",
         "tilesheet",

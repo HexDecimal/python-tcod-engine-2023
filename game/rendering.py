@@ -1,0 +1,61 @@
+import itertools
+from typing import Any
+
+import numpy as np
+import tcod.camera
+import tcod.console
+from numpy.typing import NDArray
+from tcod.ec import ComponentDict
+
+import game.actor_tools
+from game.components import Context, Graphic, MapFeatures, Position
+from game.map import Map
+from game.map_attrs import a_tiles
+from game.tiles import TileDB
+
+SHROUD = np.array([(0x20, (0, 0, 0), (0, 0, 0))], dtype=tcod.console.rgb_graphic)
+
+
+def render_map(world: ComponentDict, out: NDArray[Any]) -> None:
+    """Render the active world map, showing visible and remembered tiles/objects."""
+    map = world[Context].active_map[Map]
+    player = world[Context].player
+    tiles_db = world[TileDB]
+    player_pos = player[Position]
+    player_memory = game.actor_tools.get_memory(world, player)
+    player_fov = game.actor_tools.compute_fov(world, player)
+    camera_ij = tcod.camera.get_camera(out.shape, player_pos.yx, ((map.height, map.width), 0.5))
+
+    screen_slice, world_slice = tcod.camera.get_slices(out.shape, (map.height, map.width), camera_ij)
+    world_view = map[a_tiles][world_slice]
+
+    visible_graphics = tiles_db.data["graphic"][world_view]
+
+    for obj in itertools.chain(
+        world[Context].active_map[MapFeatures].features,
+        world[Context].actors,
+    ):
+        pos = obj[Position]
+        screen_x = pos.x - camera_ij[1] - screen_slice[1].start
+        screen_y = pos.y - camera_ij[0] - screen_slice[0].start
+        if 0 <= screen_x < visible_graphics.shape[1] and 0 <= screen_y < visible_graphics.shape[0]:
+            graphic = obj[Graphic]
+            visible_graphics[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
+
+    memory_graphics = tiles_db.data["graphic"][player_memory.tiles[world_slice]]
+
+    for pos, obj in player_memory.objs.items():
+        screen_x = pos.x - camera_ij[1] - screen_slice[1].start
+        screen_y = pos.y - camera_ij[0] - screen_slice[0].start
+        if 0 <= screen_x < visible_graphics.shape[1] and 0 <= screen_y < visible_graphics.shape[0]:
+            graphic = obj[Graphic]
+            memory_graphics[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
+
+    memory_graphics["fg"] //= 2
+    memory_graphics["bg"] //= 2
+
+    out[screen_slice] = np.select(
+        [player_fov.visible[world_slice], player_memory.tiles[world_slice] != 0],
+        [visible_graphics, memory_graphics],
+        SHROUD,
+    )

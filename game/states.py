@@ -1,19 +1,14 @@
-import itertools
-
 import tcod
-from tcod.camera import clamp_camera, get_views
 
 import g
 import game.action
 import game.actions
+import game.actor_tools
 import game.commands
-import game.world_logic
-from game.components import Context, Direction, Graphic, MapFeatures, Position
-from game.map import Map
-from game.map_attrs import a_tiles
+import game.rendering
+from game.components import Context, Direction
 from game.sched import Ticket
 from game.state import State
-from game.tiles import TileDB
 
 
 class InGame(State):
@@ -49,23 +44,6 @@ class InGame(State):
                 raise NotImplementedError()
 
     def on_draw(self, console: tcod.Console) -> None:
-        map = g.world[Context].active_map[Map]
-        tiles_db = g.world[TileDB]
-        player_pos = g.world[Context].player[Position]
-        camera_ij: tuple[int, ...] = (player_pos.y - console.height // 2, player_pos.x - console.width // 2)
-        camera_ij = clamp_camera((console.height, console.width), (map.height, map.width), camera_ij)
-        screen_view, world_view = get_views(console.tiles_rgb, map[a_tiles], camera_ij)
-        screen_view[:] = tiles_db.data["graphic"][world_view]
-
-        for obj in itertools.chain(
-            g.world[Context].active_map[MapFeatures].features,
-            g.world[Context].actors,
-        ):
-            pos = obj[Position]
-            screen_x = pos.x - camera_ij[1]
-            screen_y = pos.y - camera_ij[0]
-            if 0 <= screen_x < console.width and 0 <= screen_y < console.height:
-                graphic = obj[Graphic]
-                console.tiles_rgb[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
+        game.rendering.render_map(g.world, console.tiles_rgb)
 
         console.print(0, 0, f"Turn: {g.world[Context].sched.time}", fg=(255, 255, 255))
