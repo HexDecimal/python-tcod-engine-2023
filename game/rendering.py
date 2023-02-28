@@ -11,9 +11,33 @@ import game.actor_tools
 from game.components import Context, Graphic, MapFeatures, Position
 from game.map import Map
 from game.map_attrs import a_tiles
+from game.messages import MessageLog
 from game.tiles import TileDB
 
 SHROUD = np.array([(0x20, (0, 0, 0), (0, 0, 0))], dtype=tcod.console.rgb_graphic)
+
+
+def render_all(world: ComponentDict, console: tcod.console.Console) -> None:
+    LOG_HEIGHT = 5
+    SIDEBAR_WIDTH = 20
+    console.clear()
+    # if __debug__:
+    #    console.rgb[:] = 0x20, (0, 127, 0), (255, 0, 255)
+    render_map(world, console.rgb[:-LOG_HEIGHT, :-SIDEBAR_WIDTH])
+    log_console = tcod.console.Console(console.width - SIDEBAR_WIDTH, LOG_HEIGHT)
+    side_console = tcod.console.Console(SIDEBAR_WIDTH, console.height)
+
+    y = log_console.height
+    for message in reversed(world[MessageLog].log):
+        text = str(message)
+        y -= tcod.console.get_height_rect(log_console.width, text)
+        log_console.print_box(0, y, log_console.width, 0, text, (255, 255, 255))
+        if y <= 0:
+            break
+    log_console.blit(console, dest_x=0, dest_y=console.height - log_console.height)
+
+    side_console.print(0, 0, f"Turn: {world[Context].sched.time}", fg=(255, 255, 255))
+    side_console.blit(console, dest_x=console.width - side_console.width, dest_y=0)
 
 
 def render_map(world: ComponentDict, out: NDArray[Any]) -> None:

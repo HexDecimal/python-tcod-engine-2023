@@ -7,6 +7,7 @@ import game.actor_tools
 import game.commands
 import game.rendering
 from game.components import Context, Direction
+from game.messages import MessageLog
 from game.sched import Ticket
 from game.state import State
 
@@ -39,11 +40,9 @@ class InGame(State):
                 world[Context].sched.pop()
                 player[Ticket] = world[Context].sched.schedule(time_passed, player)
             case game.action.Impossible(reason=reason):
-                print(reason)
+                world[MessageLog].append(reason)
             case _:
                 raise NotImplementedError()
 
     def on_draw(self, console: tcod.Console) -> None:
-        game.rendering.render_map(g.world, console.tiles_rgb)
-
-        console.print(0, 0, f"Turn: {g.world[Context].sched.time}", fg=(255, 255, 255))
+        game.rendering.render_all(g.world, console)

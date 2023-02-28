@@ -25,6 +25,7 @@
         "argmax",
         "argwhere",
         "astype",
+        "blit",
         "dejavu",
         "dtype",
         "getnewargs",

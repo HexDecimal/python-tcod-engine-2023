@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import logging
+import sys
+import warnings
 
 import tcod
 
@@ -22,7 +24,7 @@ def main() -> None:
         g.world = game.world_tools.new_world()
         g.state = [game.states.InGame()]
         while True:
-            console = g.context.new_console()
+            console = g.context.new_console(30, 20)
             g.state[-1].on_draw(console)
             g.context.present(console, keep_aspect=True, integer_scaling=True)
             for event in tcod.event.wait():
@@ -33,4 +35,6 @@ def main() -> None:
 if __name__ == "__main__":
     if __debug__:
         logging.basicConfig(level=logging.DEBUG)
+        if not sys.warnoptions:
+            warnings.simplefilter("default")
     main()
