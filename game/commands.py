@@ -14,6 +14,28 @@ class MoveDir(NamedTuple):
 
 
 @keybindings.register()
+class System(Enum):
+    """Important system keys."""
+
+    UP = MoveDir(0, -1)
+    DOWN = MoveDir(0, 1)
+    LEFT = MoveDir(-1, 0)
+    RIGHT = MoveDir(1, 0)
+    CONFIRM = "CONFIRM"
+    ESCAPE = "ESCAPE"
+
+
+keybindings.add_bind(System.UP, Bind(sym=KeySym.UP))
+keybindings.add_bind(System.DOWN, Bind(sym=KeySym.DOWN))
+keybindings.add_bind(System.LEFT, Bind(sym=KeySym.LEFT))
+keybindings.add_bind(System.RIGHT, Bind(sym=KeySym.RIGHT))
+keybindings.add_bind(System.CONFIRM, Bind(sym=KeySym.RETURN))
+keybindings.add_bind(System.CONFIRM, Bind(sym=KeySym.RETURN2))
+keybindings.add_bind(System.CONFIRM, Bind(sym=KeySym.KP_ENTER))
+keybindings.add_bind(System.ESCAPE, Bind(sym=KeySym.ESCAPE))
+
+
+@keybindings.register()
 class InGame(Enum):
     MOVE_N = MoveDir(0, -1)
     MOVE_NE = MoveDir(1, -1)

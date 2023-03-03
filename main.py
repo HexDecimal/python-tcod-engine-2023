@@ -6,9 +6,26 @@ import warnings
 import tcod
 
 import g
+import game.state
 import game.states
 import game.world_logic
 import game.world_tools
+
+
+def handle_state(result: game.state.StateResult) -> None:
+    match result:
+        case game.state.Push(state):
+            g.state.append(state)
+        case game.state.Pop():
+            g.state.pop()
+        case game.state.Reset(state):
+            g.state = [state]
+        case None:
+            pass
+        case _:
+            assert False
+    if hasattr(g, "world"):
+        game.world_logic.until_player_turn(g.world)
 
 
 def main() -> None:
@@ -22,14 +39,14 @@ def main() -> None:
         vsync=True,
     ) as g.context:
         g.world = game.world_tools.new_world()
-        g.state = [game.states.InGame()]
+        g.state = [game.states.MainMenu()]
         while True:
             console = g.context.new_console(30, 20)
             g.state[-1].on_draw(console)
             g.context.present(console, keep_aspect=True, integer_scaling=True)
             for event in tcod.event.wait():
-                g.state[-1].on_event(event)
-                game.world_logic.until_player_turn(g.world)
+                event = g.context.convert_event(event)
+                handle_state(g.state[-1].on_event(event))
 
 
 if __name__ == "__main__":
