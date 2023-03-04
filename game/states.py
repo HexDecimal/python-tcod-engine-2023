@@ -91,6 +91,8 @@ class Menu(State):
                 self.selected = self.get_position(event)
                 if self.selected is not None:
                     return self.items[self.selected].callback()
+            case tcod.event.WindowEvent(type="WindowLeave"):
+                self.selected = None
             case tcod.event.Quit():
                 raise SystemExit()
         return None
@@ -99,8 +101,10 @@ class Menu(State):
         match command.value:
             case game.commands.MoveDir(y=dy):
                 if self.selected is None:
-                    self.selected = 0
-                self.selected = (self.selected + dy) % len(self.items)
+                    self.selected = 0 if dy > 0 else -1
+                else:
+                    self.selected += dy
+                self.selected %= len(self.items)
             case "CONFIRM":
                 if self.selected is not None:
                     return self.items[self.selected].callback()
