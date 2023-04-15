@@ -42,7 +42,7 @@ def compute_fov(world: ComponentDict, actor: ComponentDict, update_memory: bool 
     """
     active_map = world[Context].active_map
     actor_pos = actor[Position]
-    fov = actor.get(ActiveFOV)
+    fov: ActiveFOV | None = actor.get(ActiveFOV)
     if fov and fov.active_map is active_map and fov.active_pos == actor_pos:
         return fov
 
