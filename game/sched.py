@@ -1,5 +1,6 @@
 import heapq
-from typing import Generic, Iterable, NamedTuple, TypeVar
+from collections.abc import Iterable
+from typing import Generic, NamedTuple, TypeVar
 
 T = TypeVar("T")
 

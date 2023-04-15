@@ -23,7 +23,7 @@ def handle_state(result: game.state.StateResult) -> None:
         case None:
             pass
         case _:
-            assert False
+            raise AssertionError()
     if hasattr(g, "world"):
         game.world_logic.until_player_turn(g.world)
 

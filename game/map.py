@@ -1,4 +1,5 @@
-from typing import Any, Dict, Hashable, Optional, TypeVar
+from collections.abc import Hashable
+from typing import Any, TypeVar
 
 import attrs
 import numpy as np
@@ -11,7 +12,7 @@ T = TypeVar("T")
 class MapAttribute:
     """A generic map attribute used as a key for generic maps."""
 
-    def __init__(self, key: Optional[Hashable], dtype: DTypeLike, default: Any = 0):
+    def __init__(self, key: Hashable | None, dtype: DTypeLike, default: Any = 0) -> None:
         self.key = key if key is not None else self
         self.dtype = np.dtype(dtype)
         self.default = default
@@ -35,9 +36,9 @@ class Map:
     >>> map[monster["my_explored_attr"]][:] = 0
     """
 
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int) -> None:
         self.width, self.height = width, height
-        self._data: Dict[Hashable, NDArray[Any]] = {}
+        self._data: dict[Hashable, NDArray[Any]] = {}
 
     def __contains__(self, attr: MapAttribute) -> bool:
         if attr.key not in self._data:

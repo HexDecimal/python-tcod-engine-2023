@@ -1,4 +1,5 @@
-from typing import Iterator, NamedTuple
+from collections.abc import Iterator
+from typing import NamedTuple
 
 from tcod.ec import ComponentDict
 

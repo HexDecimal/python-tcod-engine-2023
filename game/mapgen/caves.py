@@ -15,7 +15,7 @@ from game.tiles import TileDB
 
 
 def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
-    """Return a boolean map for all sections which are holes"""
+    """Return a boolean map for all sections which are holes."""
     label, num_features = scipy.ndimage.label(input, [[0, 1, 0], [1, 1, 1], [0, 1, 0]])
     max_label = np.argmax([np.sum(label == i) for i in range(1, num_features + 1)]) + 1
     label[label == max_label] = 0

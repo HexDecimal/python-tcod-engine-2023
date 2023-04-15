@@ -1,6 +1,7 @@
 import enum
 from collections import defaultdict
-from typing import Any, Callable, Dict, Iterable, List, Optional, Self, Tuple, Type, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, Self, TypeVar
 
 import attrs
 import tcod.event
@@ -24,16 +25,16 @@ _MOD_DECODE = {v: k for k, v in _MOD_ENCODE.items()}
 
 @attrs.define(frozen=True, kw_only=True)
 class Bind:
-    sym: Optional[tcod.event.KeySym] = None
-    scancode: Optional[tcod.event.Scancode] = None
-    shift: Optional[bool | Tuple[bool, bool]] = False
-    alt: Optional[bool | Tuple[bool, bool]] = False
-    ctrl: Optional[bool | Tuple[bool, bool]] = False
-    gui: Optional[bool | Tuple[bool, bool]] = False
-    mode: Optional[bool] = False
-    num_lock: Optional[bool] = None
-    caps_lock: Optional[bool] = None
-    scroll_lock: Optional[bool] = None
+    sym: tcod.event.KeySym | None = None
+    scancode: tcod.event.Scancode | None = None
+    shift: bool | tuple[bool, bool] | None = False
+    alt: bool | tuple[bool, bool] | None = False
+    ctrl: bool | tuple[bool, bool] | None = False
+    gui: bool | tuple[bool, bool] | None = False
+    mode: bool | None = False
+    num_lock: bool | None = None
+    caps_lock: bool | None = None
+    scroll_lock: bool | None = None
 
     def __match_modifier(self, name: str, event: tcod.event.KeyboardEvent) -> bool:
         """Return True if the modifiers in `event` match `name` in this object.
@@ -43,7 +44,7 @@ class Bind:
         - self value is (bool, bool): True if modifier keys exactly match.
         """
         assert name != "shift"
-        self_value: None | bool | Tuple[bool, bool] = getattr(self, name)
+        self_value: None | bool | tuple[bool, bool] = getattr(self, name)
         if self_value is None:
             return True
         upper_name = name.upper()
@@ -58,7 +59,8 @@ class Bind:
     def value(self) -> int:
         """The narrowness of this binding.
 
-        High value means this bind is more specific and should take priority over other bindings."""
+        High value means this bind is more specific and should take priority over other bindings.
+        """
         return (
             0
             + (self.num_lock is not None)
@@ -102,9 +104,9 @@ class Bind:
         )
 
     @classmethod
-    def _from_toml_str(cls, state: Dict[str, str]) -> Self:
+    def _from_toml_str(cls, state: dict[str, str]) -> Self:
         """Parse a TOML inline table and return a new Bind."""
-        decode_keys: Dict[str, Any] = {}
+        decode_keys: dict[str, Any] = {}
         if "sym" in state:
             decode_keys["sym"] = tcod.event.KeySym[state["sym"]]
             del state["sym"]
@@ -118,7 +120,7 @@ class Bind:
 
     def _as_toml_str(self) -> str:
         """Export this Bind as an inline table for TOML."""
-        state: Dict[str, str | bool | Tuple[bool, bool]] = {}
+        state: dict[str, str | bool | tuple[bool, bool]] = {}
         if self.sym is not None:
             state["sym"] = self.sym.name
         if self.scancode is not None:
@@ -147,12 +149,12 @@ class Bind:
 
 class Keybindings:
     def __init__(self) -> None:
-        self.binds: Dict[Type[enum.Enum], Dict[Bind, enum.Enum]] = defaultdict(dict)
-        self.enums: Dict[str, Type[enum.Enum]] = {}
+        self.binds: dict[type[enum.Enum], dict[Bind, enum.Enum]] = defaultdict(dict)
+        self.enums: dict[str, type[enum.Enum]] = {}
         self.toggle_shift = False
 
-    def register(self, category: str | None = None) -> Callable[[Type[_Enum]], Type[_Enum]]:
-        def func(__enum: Type[_Enum]) -> Type[_Enum]:
+    def register(self, category: str | None = None) -> Callable[[type[_Enum]], type[_Enum]]:
+        def func(__enum: type[_Enum]) -> type[_Enum]:
             self.binds[__enum] = {}
             self.enums[__enum.__name__] = __enum
             return __enum
@@ -170,11 +172,11 @@ class Keybindings:
                     self.binds[enum_type][Bind._from_toml_str(bind)] = enum_type[name]
 
     def dumps(self) -> str:
-        output: List[str] = ['version = "0.0"', ""]
+        output: list[str] = ['version = "0.0"', ""]
         for enum_type, binds in self.binds.items():
             category = enum_type.__name__
             output.append(f"[{category}]")
-            bindings: Dict[str, List[str]] = {}
+            bindings: dict[str, list[str]] = {}
             for bind, value in binds.items():
                 bindings.setdefault(value.name, []).append(bind._as_toml_str())
             for bind_name, bind_list in bindings.items():
@@ -188,13 +190,13 @@ class Keybindings:
     def add_bind(self, enum: enum.Enum, bind: Bind) -> None:
         self.binds[type(enum)][bind] = enum
 
-    def add_binds(self, bindings: Dict[enum.Enum, Iterable[Bind]]) -> None:
+    def add_binds(self, bindings: dict[enum.Enum, Iterable[Bind]]) -> None:
         for value, binds in bindings.items():
             enum_type = type(value)
             for bind in binds:
                 self.binds[enum_type][bind] = value
 
-    def parse(self, event: tcod.event.Event, enum: Type[_Enum]) -> Optional[_Enum]:
+    def parse(self, event: tcod.event.Event, enum: type[_Enum]) -> _Enum | None:
         if not isinstance(event, tcod.event.KeyboardEvent):
             return None
         binds = self.binds[enum]
