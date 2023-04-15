@@ -13,6 +13,7 @@
     "editor.formatOnSave": true,
     "python.formatting.provider": "black",
     "editor.codeActionsOnSave": {
+        "source.fixAll": true, // Ruff fixes.
         "source.organizeImports": true // Runs isort.
     },
     "editor.rulers": [
