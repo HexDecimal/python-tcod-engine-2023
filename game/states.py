@@ -61,12 +61,19 @@ class MenuItem:
 
 
 class Menu(State):
-    def __init__(self, items: Iterable[MenuItem], selected: int = 0) -> None:
+    def __init__(
+        self,
+        items: Iterable[MenuItem],
+        *,
+        selected: int = 0,
+        x: int = 5,
+        y: int = 5,
+    ) -> None:
         self.items = list(items)
         self.selected: int | None = selected
         """Index of the focused menu item or None if no item is focused."""
-        self.x = 5
-        self.y = 5
+        self.x = x
+        self.y = y
 
     def get_position(self, event: tcod.event.MouseButtonEvent | tcod.event.MouseMotion) -> int | None:
         """Return the menu position of a mouse event."""
@@ -91,6 +98,9 @@ class Menu(State):
                 self.selected = self.get_position(event)
                 if self.selected is not None:
                     return self.items[self.selected].callback()
+                return self.on_cancel()
+            case tcod.event.MouseButtonUp(button=tcod.event.BUTTON_RIGHT):
+                return self.on_cancel()
             case tcod.event.WindowEvent(type="WindowLeave"):
                 self.selected = None
             case tcod.event.Quit():
@@ -108,12 +118,20 @@ class Menu(State):
             case "CONFIRM":
                 if self.selected is not None:
                     return self.items[self.selected].callback()
+            case "ESCAPE":
+                return self.on_cancel()
         return None
 
     def on_draw(self, console: tcod.Console) -> None:
+        this_index = g.state.index(self)
+        if this_index > 0:
+            g.state[this_index - 1].on_draw(console)
         for i, item in enumerate(self.items):
             bg = (0x40, 0x40, 0x40) if i == self.selected else (0, 0, 0)
             console.print_box(self.x, self.y + i, 0, 0, item.label, fg=(255, 255, 255), bg=bg)
+
+    def on_cancel(self) -> StateResult:
+        return None
 
 
 class MainMenu(Menu):
