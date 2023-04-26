@@ -4,7 +4,7 @@ from typing import Any, TypeVar
 import attrs
 import numpy as np
 from numpy.typing import DTypeLike, NDArray
-from tcod.ec import ComponentDict
+from tcod.ecs import Entity, World
 
 T = TypeVar("T")
 
@@ -63,5 +63,5 @@ class Map:
 
 @attrs.define(frozen=True)
 class MapKey:
-    def generate(self, world: ComponentDict) -> ComponentDict:
+    def generate(self, world: World) -> Entity:
         raise NotImplementedError()

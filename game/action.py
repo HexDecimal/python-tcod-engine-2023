@@ -5,21 +5,22 @@ from typing import Literal
 
 import attrs
 from tcod.ec import ComponentDict
+from tcod.ecs import Entity, World
 
 
 class Action:
     def __init__(self, data: Iterable[object]) -> None:
         self.data = ComponentDict(data)
 
-    def poll(self, world: ComponentDict, actor: ComponentDict) -> PollResult:
+    def poll(self, world: World, actor: Entity) -> PollResult:
         """Check if an action can be done.  Return the action to execute if it can."""
         return self
 
-    def execute(self, world: ComponentDict, actor: ComponentDict) -> Success:
+    def execute(self, world: World, actor: Entity) -> Success:
         """Force this action to be performed."""
         raise NotImplementedError()
 
-    def perform(self, world: ComponentDict, actor: ComponentDict) -> ActionResult:
+    def perform(self, world: World, actor: Entity) -> ActionResult:
         result = self.poll(world, actor)
         if not isinstance(result, Action):
             return result

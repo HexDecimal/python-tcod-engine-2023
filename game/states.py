@@ -37,15 +37,14 @@ class InGame(State):
         return None
 
     def do_action(self, action: game.action.Action) -> StateResult:
-        world = g.world
-        player = world[Context].player
-        match action.perform(world, player):
+        player = g.world.global_.components[Context].player
+        match action.perform(g.world, player):
             case game.action.Success(time_passed=time_passed):
-                assert world[Context].sched.peek() is player[Ticket]
-                world[Context].sched.pop()
-                player[Ticket] = world[Context].sched.schedule(time_passed, player)
+                assert g.world.global_.components[Context].sched.peek() is player.components[Ticket]
+                g.world.global_.components[Context].sched.pop()
+                player.components[Ticket] = g.world.global_.components[Context].sched.schedule(time_passed, player)
             case game.action.Impossible(reason=reason):
-                world[MessageLog].append(reason)
+                g.world.global_.components[MessageLog].append(reason)
             case _:
                 raise NotImplementedError()
         return None

@@ -5,7 +5,7 @@ import numpy as np
 import scipy.ndimage  # type: ignore
 import scipy.signal  # type: ignore
 from numpy.typing import NDArray
-from tcod.ec import ComponentDict
+from tcod.ecs import Entity, World
 
 import game.map_tools
 from game import map_attrs
@@ -26,13 +26,13 @@ def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
 class CaveMap(MapKey):
     level: int
 
-    def generate(self, world: ComponentDict) -> ComponentDict:
+    def generate(self, world: World) -> Entity:
         assert self.level > 0
-        tiles_db = world[TileDB]
+        tiles_db = world.global_.components[TileDB]
         rng = np.random.default_rng()
 
         map = game.map_tools.new_map(world, 50, 50)
-        walls = np.zeros((map[Map].height - 2, map[Map].width - 2), bool)
+        walls = np.zeros((map.components[Map].height - 2, map.components[Map].width - 2), bool)
 
         walls.ravel()[: walls.size * 45 // 100] = 1
         rng.shuffle(walls.ravel())
@@ -60,17 +60,17 @@ class CaveMap(MapKey):
 
         walls = np.pad(walls, 1, constant_values=True)
 
-        map[Map][map_attrs.a_tiles][:] = np.array([tiles_db["floor"], tiles_db["wall"]])[walls.astype(int)]
+        map.components[Map][map_attrs.a_tiles][:] = np.array([tiles_db["floor"], tiles_db["wall"]])[walls.astype(int)]
         free_spaces_ = np.argwhere(walls.T == 0)
         rng.shuffle(free_spaces_)
         free_spaces = free_spaces_.tolist()
 
-        map[MapFeatures] = MapFeatures(
+        map.components[MapFeatures] = MapFeatures(
             [
-                ComponentDict(
+                world.new_entity(
                     [Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=CaveMap(self.level + 1))]
                 ),
-                ComponentDict(
+                world.new_entity(
                     [
                         Position(*free_spaces.pop()),
                         Graphic(ord("<")),

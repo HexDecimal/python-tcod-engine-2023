@@ -4,7 +4,7 @@ from typing import Self
 
 import attrs
 from attrs import Factory, field
-from tcod.ec import ComponentDict
+from tcod.ecs import Entity
 
 from game.map import MapKey
 from game.sched import TurnQueue
@@ -12,10 +12,9 @@ from game.sched import TurnQueue
 
 @attrs.define()
 class Context:
-    active_map: ComponentDict = field(init=False)
-    player: ComponentDict = field(init=False)
-    sched: TurnQueue[ComponentDict] = Factory(TurnQueue)
-    actors: set[ComponentDict] = Factory(set)
+    active_map: Entity = field(init=False)
+    player: Entity = field(init=False)
+    sched: TurnQueue[Entity] = Factory(TurnQueue)
 
 
 @attrs.define(frozen=True)
@@ -70,8 +69,8 @@ class Stairway:
 
 @attrs.define()
 class MapFeatures:
-    features: list[ComponentDict] = Factory(list)
+    features: list[Entity] = Factory(list)
 
 
-class MapDict(dict[MapKey, ComponentDict]):
+class MapDict(dict[MapKey, Entity]):
     pass

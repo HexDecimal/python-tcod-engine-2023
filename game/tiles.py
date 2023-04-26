@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 import tcod
 from numpy.typing import NDArray
-from tcod.ec import ComponentDict
+from tcod.ecs import World
 
 TILE_DTYPE = np.dtype(
     [
@@ -79,11 +79,11 @@ class TileDB:
         return self._identifiers[key]
 
 
-def init(world: ComponentDict) -> None:
+def init(world: World) -> None:
     """Initialize or update the TileDB component on a world."""
-    if TileDB not in world:
-        world.set(TileDB())
-    tile_db = world[TileDB]
+    if TileDB not in world.global_.components:
+        world.global_.components[TileDB] = TileDB()
+    tile_db = world.global_.components[TileDB]
     tile_db.register("", graphic=(ord("?"), (0xFF, 0xFF, 0xFF), (0xFF, 0x0, 0xFF)), transparent=True, walk_cost=1)
     tile_db.register("floor", graphic=(ord("."), (0x44, 0x44, 0x44), (0x0, 0x0, 0x0)), transparent=True, walk_cost=1)
     tile_db.register("wall", graphic=(ord(" "), (0xFF, 0xFF, 0xFF), (0x88, 0x88, 0x88)), transparent=False, walk_cost=0)

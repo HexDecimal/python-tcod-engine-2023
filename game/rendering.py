@@ -5,7 +5,7 @@ import numpy as np
 import tcod.camera
 import tcod.console
 from numpy.typing import NDArray
-from tcod.ec import ComponentDict
+from tcod.ecs import World
 
 import game.actor_tools
 from game.components import Context, Graphic, MapFeatures, Position
@@ -17,7 +17,7 @@ from game.tiles import TileDB
 SHROUD = np.array([(0x20, (0, 0, 0), (0, 0, 0))], dtype=tcod.console.rgb_graphic)
 
 
-def render_all(world: ComponentDict, console: tcod.console.Console) -> None:
+def render_all(world: World, console: tcod.console.Console) -> None:
     LOG_HEIGHT = 5
     SIDEBAR_WIDTH = 20
     console.clear()
@@ -28,7 +28,7 @@ def render_all(world: ComponentDict, console: tcod.console.Console) -> None:
     side_console = tcod.console.Console(SIDEBAR_WIDTH, console.height)
 
     y = log_console.height
-    for message in reversed(world[MessageLog].log):
+    for message in reversed(world.global_.components[MessageLog].log):
         text = str(message)
         y -= tcod.console.get_height_rect(log_console.width, text)
         log_console.print_box(0, y, log_console.width, 0, text, (255, 255, 255))
@@ -36,16 +36,16 @@ def render_all(world: ComponentDict, console: tcod.console.Console) -> None:
             break
     log_console.blit(console, dest_x=0, dest_y=console.height - log_console.height)
 
-    side_console.print(0, 0, f"Turn: {world[Context].sched.time}", fg=(255, 255, 255))
+    side_console.print(0, 0, f"Turn: {world.global_.components[Context].sched.time}", fg=(255, 255, 255))
     side_console.blit(console, dest_x=console.width - side_console.width, dest_y=0)
 
 
-def render_map(world: ComponentDict, out: NDArray[Any]) -> None:
+def render_map(world: World, out: NDArray[Any]) -> None:
     """Render the active world map, showing visible and remembered tiles/objects."""
-    map = world[Context].active_map[Map]
-    player = world[Context].player
-    tiles_db = world[TileDB]
-    player_pos = player[Position]
+    map = world.global_.components[Context].active_map.components[Map]
+    player = world.global_.components[Context].player
+    tiles_db = world.global_.components[TileDB]
+    player_pos = player.components[Position]
     player_memory = game.actor_tools.get_memory(world, player)
     player_fov = game.actor_tools.compute_fov(world, player)
     camera_ij = tcod.camera.get_camera(out.shape, player_pos.yx, ((map.height, map.width), 0.5))
@@ -56,14 +56,14 @@ def render_map(world: ComponentDict, out: NDArray[Any]) -> None:
     visible_graphics = tiles_db.data["graphic"][world_view]
 
     for obj in itertools.chain(
-        world[Context].active_map[MapFeatures].features,
-        world[Context].actors,
+        world.global_.components[Context].active_map.components[MapFeatures].features,
+        world.Q.all_of([Position, Graphic]),
     ):
-        pos = obj[Position]
+        pos = obj.components[Position]
         screen_x = pos.x - camera_ij[1] - screen_slice[1].start
         screen_y = pos.y - camera_ij[0] - screen_slice[0].start
         if 0 <= screen_x < visible_graphics.shape[1] and 0 <= screen_y < visible_graphics.shape[0]:
-            graphic = obj[Graphic]
+            graphic = obj.components[Graphic]
             visible_graphics[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
 
     memory_graphics = tiles_db.data["graphic"][player_memory.tiles[world_slice]]
@@ -72,7 +72,7 @@ def render_map(world: ComponentDict, out: NDArray[Any]) -> None:
         screen_x = pos.x - camera_ij[1] - screen_slice[1].start
         screen_y = pos.y - camera_ij[0] - screen_slice[0].start
         if 0 <= screen_x < visible_graphics.shape[1] and 0 <= screen_y < visible_graphics.shape[0]:
-            graphic = obj[Graphic]
+            graphic = obj.components[Graphic]
             memory_graphics[["ch", "fg"]][screen_y, screen_x] = graphic.ch, graphic.fg
 
     memory_graphics["fg"] //= 2
