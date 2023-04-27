@@ -57,7 +57,7 @@ def render_map(world: World, out: NDArray[Any]) -> None:
 
     for obj in itertools.chain(
         world.global_.components[Context].active_map.components[MapFeatures].features,
-        world.Q.all_of([Position, Graphic]),
+        world.Q.all_of([Position, Graphic], tags=["IsActor"]),
     ):
         pos = obj.components[Position]
         screen_x = pos.x - camera_ij[1] - screen_slice[1].start

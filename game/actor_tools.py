@@ -18,6 +18,7 @@ def new_actor(world: World, components: Iterable[object] = ()) -> Entity:
     ctx = world.global_.components[Context]
     actor = world.new_entity([Position(0, 0), Graphic(), *components])
     actor.components[Ticket] = ctx.sched.schedule(0, actor)
+    actor.tags.add("IsActor")
     return actor
 
 
