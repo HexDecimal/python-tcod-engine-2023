@@ -6,9 +6,10 @@ from tcod.ecs import Entity, World
 import game.actor_tools
 import game.map_tools
 from game.action import Action, Impossible, PollResult, Success
-from game.components import Context, Direction, MapFeatures, Player, Position, Stairway
+from game.components import Context, Direction, Player, Position, Stairway
 from game.map import Map, MapKey
 from game.map_attrs import a_tiles
+from game.tags import ChildOf
 from game.tiles import TileDB
 
 
@@ -43,10 +44,7 @@ class UseStairs(Action):
         next_map: MapKey
 
     def iter_stairs(self, map: Entity) -> Iterator[Entity]:
-        for obj in map.components[MapFeatures].features:
-            if Stairway not in obj.components:
-                continue
-            yield obj
+        yield from map.world.Q.all_of([Stairway], relations=[(ChildOf, map)])
 
     def get_stairs(self, world: World, actor: Entity) -> PassageInfo | None:
         actor_pos = actor.components[Position]
@@ -75,5 +73,5 @@ class UseStairs(Action):
         passage = self.get_stairs(world, actor)
         assert passage
         actor.components[Position] = passage.exit.components[Position]
-        game.map_tools.activate_map(world, passage.next_map)
+        actor.relation_tags[ChildOf] = game.map_tools.activate_map(world, passage.next_map)
         return Success(time_passed=100)

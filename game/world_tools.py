@@ -19,5 +19,5 @@ def new_world() -> World:
     game.tiles.init(world)
     ctx = world.global_.components[Context]
     activate_map(world, TestMap())
-    ctx.player = new_actor(world, (Position(1, 1), Graphic(ord("@")), Player()))
+    ctx.player = new_actor(ctx.active_map, (Position(1, 1), Graphic(ord("@")), Player()))
     return world

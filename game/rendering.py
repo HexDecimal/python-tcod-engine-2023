@@ -8,10 +8,11 @@ from numpy.typing import NDArray
 from tcod.ecs import World
 
 import game.actor_tools
-from game.components import Context, Graphic, MapFeatures, Position
+from game.components import Context, Graphic, Position
 from game.map import Map
 from game.map_attrs import a_tiles
 from game.messages import MessageLog
+from game.tags import IsActor
 from game.tiles import TileDB
 
 SHROUD = np.array([(0x20, (0, 0, 0), (0, 0, 0))], dtype=tcod.console.rgb_graphic)
@@ -42,22 +43,23 @@ def render_all(world: World, console: tcod.console.Console) -> None:
 
 def render_map(world: World, out: NDArray[Any]) -> None:
     """Render the active world map, showing visible and remembered tiles/objects."""
-    map = world.global_.components[Context].active_map.components[Map]
+    map = world.global_.components[Context].active_map
+    map_data = map.components[Map]
     player = world.global_.components[Context].player
     tiles_db = world.global_.components[TileDB]
     player_pos = player.components[Position]
     player_memory = game.actor_tools.get_memory(world, player)
     player_fov = game.actor_tools.compute_fov(world, player)
-    camera_ij = tcod.camera.get_camera(out.shape, player_pos.yx, ((map.height, map.width), 0.5))
+    camera_ij = tcod.camera.get_camera(out.shape, player_pos.yx, ((map_data.height, map_data.width), 0.5))
 
-    screen_slice, world_slice = tcod.camera.get_slices(out.shape, (map.height, map.width), camera_ij)
-    world_view = map[a_tiles][world_slice]
+    screen_slice, world_slice = tcod.camera.get_slices(out.shape, (map_data.height, map_data.width), camera_ij)
+    world_view = map_data[a_tiles][world_slice]
 
     visible_graphics = tiles_db.data["graphic"][world_view]
 
     for obj in itertools.chain(
-        world.global_.components[Context].active_map.components[MapFeatures].features,
-        world.Q.all_of([Position, Graphic], tags=["IsActor"]),
+        world.Q.all_of([Position, Graphic], relations=[("ChildOf", map)]).none_of(tags=[IsActor]),
+        world.Q.all_of([Position, Graphic], tags=[IsActor], relations=[("ChildOf", map)]),
     ):
         pos = obj.components[Position]
         screen_x = pos.x - camera_ij[1] - screen_slice[1].start

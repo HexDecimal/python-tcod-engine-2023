@@ -67,10 +67,5 @@ class Stairway:
     up: MapKey | None = None
 
 
-@attrs.define()
-class MapFeatures:
-    features: list[Entity] = Factory(list)
-
-
 class MapDict(dict[MapKey, Entity]):
     pass

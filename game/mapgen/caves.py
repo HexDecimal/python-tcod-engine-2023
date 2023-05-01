@@ -9,8 +9,9 @@ from tcod.ecs import Entity, World
 
 import game.map_tools
 from game import map_attrs
-from game.components import Graphic, MapFeatures, Position, Stairway
+from game.components import Graphic, Position, Stairway
 from game.map import Map, MapKey
+from game.tags import ChildOf
 from game.tiles import TileDB
 
 
@@ -65,19 +66,17 @@ class CaveMap(MapKey):
         rng.shuffle(free_spaces_)
         free_spaces = free_spaces_.tolist()
 
-        map.components[MapFeatures] = MapFeatures(
-            [
-                world.new_entity(
-                    [Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=CaveMap(self.level + 1))]
-                ),
-                world.new_entity(
-                    [
-                        Position(*free_spaces.pop()),
-                        Graphic(ord("<")),
-                        Stairway(up=game.map_tools.TestMap(0) if self.level == 1 else CaveMap(self.level - 1)),
-                    ]
-                ),
-            ]
-        )
+        features = [
+            world.new_entity([Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=CaveMap(self.level + 1))]),
+            world.new_entity(
+                [
+                    Position(*free_spaces.pop()),
+                    Graphic(ord("<")),
+                    Stairway(up=game.map_tools.TestMap(0) if self.level == 1 else CaveMap(self.level - 1)),
+                ]
+            ),
+        ]
+        for entity in features:
+            entity.relation_tags[ChildOf] = map
 
         return map

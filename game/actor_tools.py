@@ -8,17 +8,21 @@ from tcod.ecs import Entity, World
 
 import game.map_attrs
 from game.actor_types import ActiveFOV, Memory, MemoryLayer
-from game.components import Context, Graphic, MapFeatures, Position
+from game.components import Context, Graphic, Position
 from game.map import Map
 from game.sched import Ticket
+from game.tags import IsActor
 from game.tiles import TileDB
 
 
-def new_actor(world: World, components: Iterable[object] = ()) -> Entity:
+def new_actor(parent: Entity, components: Iterable[object] = ()) -> Entity:
+    """Spawn a new actor with the given components."""
+    world = parent.world
     ctx = world.global_.components[Context]
     actor = world.new_entity([Position(0, 0), Graphic(), *components])
     actor.components[Ticket] = ctx.sched.schedule(0, actor)
-    actor.tags.add("IsActor")
+    actor.tags.add(IsActor)
+    actor.relation_tags["ChildOf"] = parent
     return actor
 
 
@@ -65,8 +69,7 @@ def compute_fov(world: World, actor: Entity, update_memory: bool = True) -> Acti
                 del memory.objs[old_pos]
 
         for obj in itertools.chain(
-            world.global_.components[Context].active_map.components[MapFeatures].features,
-            world.Q.all_of([Position]),
+            world.Q.all_of([Position], relations=[("ChildOf", active_map)]),
         ):
             pos = obj.components[Position]
             if fov.visible[pos.yx]:
