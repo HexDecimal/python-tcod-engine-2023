@@ -1,3 +1,4 @@
+"""The base class for actions are defined here."""
 from __future__ import annotations
 
 from collections.abc import Iterable

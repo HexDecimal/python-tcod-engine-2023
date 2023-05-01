@@ -1,3 +1,4 @@
+"""Assigns inputs to UI commands."""
 from enum import Enum
 from typing import NamedTuple
 

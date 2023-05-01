@@ -1,3 +1,4 @@
+"""Classes related to actors."""
 from weakref import WeakKeyDictionary
 
 import attrs

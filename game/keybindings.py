@@ -1,3 +1,4 @@
+"""Generic interface to bind keyboard inputs to program commands."""
 import enum
 from collections import defaultdict
 from collections.abc import Callable, Iterable

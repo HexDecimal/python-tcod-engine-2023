@@ -1,3 +1,4 @@
+"""Specialized state subclasses."""
 from collections.abc import Callable, Iterable
 
 import attrs

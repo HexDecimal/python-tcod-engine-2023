@@ -1,3 +1,4 @@
+"""Collect and handle tile types."""
 from collections.abc import Iterable
 from typing import Any
 

@@ -1,3 +1,4 @@
+"""Tools for working with the world."""
 from tcod.ecs import World
 
 import game.tiles

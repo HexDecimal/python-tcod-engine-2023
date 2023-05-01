@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Main script entry point."""
 import logging
 import sys
 import warnings
@@ -13,6 +14,7 @@ import game.world_tools
 
 
 def handle_state(result: game.state.StateResult) -> None:
+    """Apply StateResult effects."""
     match result:
         case game.state.Push(state):
             g.state.append(state)
@@ -29,6 +31,7 @@ def handle_state(result: game.state.StateResult) -> None:
 
 
 def main() -> None:
+    """Program entry point."""
     tileset = tcod.tileset.load_tilesheet("data/dejavu16x16_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
 
     with tcod.context.new(

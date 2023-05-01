@@ -1,3 +1,4 @@
+"""Specialized common actions."""
 from collections.abc import Iterator
 from typing import NamedTuple
 

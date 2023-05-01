@@ -1,3 +1,4 @@
+"""Tools for running world simulations."""
 from tcod.ecs import Entity, World
 
 from game.components import Context, Player
@@ -5,6 +6,7 @@ from game.sched import Ticket
 
 
 def until_player_turn(world: World) -> None:
+    """Run scheduled entities in order until the player is next."""
     ctx = world.global_.components[Context]
     while True:
         next_ticket = ctx.sched.peek()

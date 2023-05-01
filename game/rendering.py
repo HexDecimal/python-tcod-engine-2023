@@ -1,3 +1,4 @@
+"""Functions for rendering world data to a tcod console."""
 import itertools
 from typing import Any
 
@@ -19,6 +20,7 @@ SHROUD = np.array([(0x20, (0, 0, 0), (0, 0, 0))], dtype=tcod.console.rgb_graphic
 
 
 def render_all(world: World, console: tcod.console.Console) -> None:
+    """Render the world and UI."""
     LOG_HEIGHT = 5
     SIDEBAR_WIDTH = 20
     console.clear()

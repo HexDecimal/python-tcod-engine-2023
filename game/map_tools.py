@@ -1,3 +1,4 @@
+"""Tools for working with maps."""
 import itertools
 import random
 

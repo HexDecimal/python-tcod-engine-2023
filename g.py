@@ -1,3 +1,4 @@
+"""Explicitly mutable global names."""
 import tcod
 import tcod.ecs
 
