@@ -6,39 +6,48 @@ from typing import Literal
 
 import attrs
 from tcod.ec import ComponentDict
-from tcod.ecs import Entity, World
+from tcod.ecs import Entity
 
 
 class Action:
+    """An action which can be planned and can possibly be executed."""
+
     def __init__(self, data: Iterable[object]) -> None:
+        """Construct an action with any relevant extra data."""
         self.data = ComponentDict(data)
 
-    def poll(self, world: World, actor: Entity) -> PollResult:
+    def plan(self, actor: Entity) -> PollResult:
         """Check if an action can be done.  Return the action to execute if it can."""
         return self
 
-    def execute(self, world: World, actor: Entity) -> Success:
+    def execute(self, actor: Entity) -> Success:
         """Force this action to be performed."""
         raise NotImplementedError()
 
-    def perform(self, world: World, actor: Entity) -> ActionResult:
-        result = self.poll(world, actor)
+    def perform(self, actor: Entity) -> ActionResult:
+        """Plan and execute an action."""
+        result = self.plan(actor)
         if not isinstance(result, Action):
             return result
-        assert result.poll(world, actor) is result
-        return result.execute(world, actor)
+        assert result.plan(actor) is result
+        return result.execute(actor)
 
 
 @attrs.define()
 class Success:
+    """Results of a successful action."""
+
     time_passed: int
 
 
 @attrs.define()
 class Impossible:
+    """Action can not be performed."""
+
     reason: str
 
     def __bool__(self) -> Literal[False]:
+        """Treat Impossible results as falsy."""
         return False
 
 

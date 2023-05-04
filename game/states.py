@@ -39,7 +39,7 @@ class InGame(State):
 
     def do_action(self, action: game.action.Action) -> StateResult:
         player = g.world.global_.components[Context].player
-        match action.perform(g.world, player):
+        match action.perform(player):
             case game.action.Success(time_passed=time_passed):
                 assert g.world.global_.components[Context].sched.peek() is player.components[Ticket]
                 g.world.global_.components[Context].sched.pop()

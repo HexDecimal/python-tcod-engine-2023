@@ -2,7 +2,7 @@
 from collections.abc import Iterator
 from typing import NamedTuple
 
-from tcod.ecs import Entity, World
+from tcod.ecs import Entity
 
 import game.actor_tools
 import game.map_tools
@@ -15,7 +15,10 @@ from game.tiles import TileDB
 
 
 class Move(Action):
-    def poll(self, world: World, actor: Entity) -> PollResult:
+    """Move to an adjacent free space."""
+
+    def plan(self, actor: Entity) -> PollResult:
+        world = actor.world
         context = world.global_.components[Context]
         dest = actor.components[Position] + self.data[Direction]
         active_map = context.active_map.components[Map]
@@ -25,17 +28,19 @@ class Move(Action):
             return self
         return Impossible("Blocked.")
 
-    def execute(self, world: World, actor: Entity) -> Success:
+    def execute(self, actor: Entity) -> Success:
         dest = actor.components[Position] + self.data[Direction]
         actor.components[Position] = dest
         if Player in actor.components:
-            game.actor_tools.compute_fov(world, actor)
+            game.actor_tools.compute_fov(actor)
         return Success(time_passed=100)
 
 
 class Bump(Action):
-    def poll(self, world: World, actor: Entity) -> PollResult:
-        return Move([self.data[Direction]]).poll(world, actor)
+    """Context sensitive directional action."""
+
+    def plan(self, actor: Entity) -> PollResult:
+        return Move([self.data[Direction]]).plan(actor)
 
 
 class UseStairs(Action):
@@ -47,7 +52,8 @@ class UseStairs(Action):
     def iter_stairs(self, map: Entity) -> Iterator[Entity]:
         yield from map.world.Q.all_of([Stairway], relations=[(ChildOf, map)])
 
-    def get_stairs(self, world: World, actor: Entity) -> PassageInfo | None:
+    def get_stairs(self, actor: Entity) -> PassageInfo | None:
+        world = actor.world
         actor_pos = actor.components[Position]
         inverse_dir = {"up": "down", "down": "up"}[self.data[str]]
         for stairs in self.iter_stairs(world.global_.components[Context].active_map):
@@ -65,14 +71,14 @@ class UseStairs(Action):
                 return self.PassageInfo(stairs, exit_passage, next_map_key)
         return None
 
-    def poll(self, world: World, actor: Entity) -> PollResult:
-        if not self.get_stairs(world, actor):
+    def plan(self, actor: Entity) -> PollResult:
+        if not self.get_stairs(actor):
             return Impossible("No stairs in that direction.")
         return self
 
-    def execute(self, world: World, actor: Entity) -> Success:
-        passage = self.get_stairs(world, actor)
+    def execute(self, actor: Entity) -> Success:
+        passage = self.get_stairs(actor)
         assert passage
         actor.components[Position] = passage.exit.components[Position]
-        actor.relation_tags[ChildOf] = game.map_tools.activate_map(world, passage.next_map)
+        actor.relation_tags[ChildOf] = game.map_tools.activate_map(actor.world, passage.next_map)
         return Success(time_passed=100)

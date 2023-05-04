@@ -5,7 +5,7 @@ from collections.abc import Iterable
 import numpy as np
 import tcod
 import tcod.map
-from tcod.ecs import Entity, World
+from tcod.ecs import Entity
 
 import game.map_attrs
 from game.actor_types import ActiveFOV, Memory, MemoryLayer
@@ -27,9 +27,9 @@ def new_actor(parent: Entity, components: Iterable[object] = ()) -> Entity:
     return actor
 
 
-def get_memory(world: World, actor: Entity) -> MemoryLayer:
+def get_memory(actor: Entity) -> MemoryLayer:
     """Return the actors memory of the active map."""
-    active_map = world.global_.components[Context].active_map
+    active_map = actor.world.global_.components[Context].active_map
     if Memory not in actor.components:
         actor.components[Memory] = Memory()
     memory = actor.components[Memory]
@@ -41,11 +41,12 @@ def get_memory(world: World, actor: Entity) -> MemoryLayer:
     return memory.layers[active_map]
 
 
-def compute_fov(world: World, actor: Entity, update_memory: bool = True) -> ActiveFOV:
+def compute_fov(actor: Entity, update_memory: bool = True) -> ActiveFOV:
     """Lazy compute the visible area from an actor and return the result.
 
     If `update_memory` is True then commit the viewed objects to memory.
     """
+    world = actor.world
     active_map = world.global_.components[Context].active_map
     actor_pos = actor.components[Position]
     fov = actor.components.get(ActiveFOV)
@@ -62,7 +63,7 @@ def compute_fov(world: World, actor: Entity, update_memory: bool = True) -> Acti
         active_pos=actor_pos,
     )
     if update_memory:
-        memory = get_memory(world, actor)
+        memory = get_memory(actor)
         memory.tiles = np.where(fov.visible, active_map.components[Map][game.map_attrs.a_tiles], memory.tiles)
 
         for old_pos in list(memory.objs.keys()):

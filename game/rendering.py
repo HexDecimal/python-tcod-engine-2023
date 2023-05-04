@@ -50,8 +50,8 @@ def render_map(world: World, out: NDArray[Any]) -> None:
     player = world.global_.components[Context].player
     tiles_db = world.global_.components[TileDB]
     player_pos = player.components[Position]
-    player_memory = game.actor_tools.get_memory(world, player)
-    player_fov = game.actor_tools.compute_fov(world, player)
+    player_memory = game.actor_tools.get_memory(player)
+    player_fov = game.actor_tools.compute_fov(player)
     camera_ij = tcod.camera.get_camera(out.shape, player_pos.yx, ((map_data.height, map_data.width), 0.5))
 
     screen_slice, world_slice = tcod.camera.get_slices(out.shape, (map_data.height, map_data.width), camera_ij)
