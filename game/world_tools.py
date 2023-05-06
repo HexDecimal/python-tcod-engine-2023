@@ -4,11 +4,13 @@ from tcod.ecs import World
 import game.tiles
 from game.actor_tools import new_actor
 from game.components import Context, Graphic, MapDict, Player, Position
-from game.map_tools import TestMap, activate_map
+from game.map_tools import activate_map
+from game.mapgen.test import TestMap
 from game.messages import MessageLog
 
 
 def new_world() -> World:
+    """Return a newly generated World."""
     world = World()
     world.global_.components.update(
         {

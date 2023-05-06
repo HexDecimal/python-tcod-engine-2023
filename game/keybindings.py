@@ -26,6 +26,8 @@ _MOD_DECODE = {v: k for k, v in _MOD_ENCODE.items()}
 
 @attrs.define(frozen=True, kw_only=True)
 class Bind:
+    """A keyboard bind with a single sym/scancode and optional modifiers."""
+
     sym: tcod.event.KeySym | None = None
     scancode: tcod.event.Scancode | None = None
     shift: bool | tuple[bool, bool] | None = False
@@ -126,22 +128,19 @@ class Bind:
             state["sym"] = self.sym.name
         if self.scancode is not None:
             state["scancode"] = self.scancode.name
-        if self.shift is not False:
-            state["shift"] = _MOD_ENCODE[self.shift]
-        if self.alt is not False:
-            state["alt"] = _MOD_ENCODE[self.alt]
-        if self.ctrl is not False:
-            state["ctrl"] = _MOD_ENCODE[self.ctrl]
-        if self.gui is not False:
-            state["gui"] = _MOD_ENCODE[self.gui]
-        if self.mode is not False:
-            state["mode"] = _MOD_ENCODE[self.mode]
-        if self.num_lock is not None:
-            state["num_lock"] = _MOD_ENCODE[self.num_lock]
-        if self.caps_lock is not None:
-            state["caps_lock"] = _MOD_ENCODE[self.caps_lock]
-        if self.scroll_lock is not None:
-            state["scroll_lock"] = _MOD_ENCODE[self.scroll_lock]
+        for modifier_name, ignored_default in (
+            ("shift", False),
+            ("alt", False),
+            ("ctrl", False),
+            ("gui", False),
+            ("mode", False),
+            ("num_lock", None),
+            ("caps_lock", None),
+            ("scroll_lock", None),
+        ):
+            modifier_value: bool | tuple[bool, bool] | None = getattr(self, modifier_name)
+            if modifier_value is not ignored_default:
+                state[modifier_name] = _MOD_ENCODE[modifier_value]
         output = []
         for key, value in state.items():
             output.append(f"{key} = {value!r}")
@@ -149,12 +148,17 @@ class Bind:
 
 
 class Keybindings:
+    """A collection of keybindings."""
+
     def __init__(self) -> None:
+        """Initialize an empty Keybindings object."""
         self.binds: dict[type[enum.Enum], dict[Bind, enum.Enum]] = defaultdict(dict)
         self.enums: dict[str, type[enum.Enum]] = {}
         self.toggle_shift = False
 
     def register(self, category: str | None = None) -> Callable[[type[_Enum]], type[_Enum]]:
+        """Register an Enum class for keybinding. This is a decorator method."""
+
         def func(__enum: type[_Enum]) -> type[_Enum]:
             self.binds[__enum] = {}
             self.enums[__enum.__name__] = __enum
@@ -162,8 +166,9 @@ class Keybindings:
 
         return func
 
-    def loads(self, s: str) -> None:
-        input = toml.loads(s)
+    def loads(self, /, string: str) -> None:
+        """Load keybindings from a string."""
+        input = toml.loads(string)
         assert input["version"] == "0.0"
         del input["version"]
         for category, bindings in input.items():
@@ -173,6 +178,7 @@ class Keybindings:
                     self.binds[enum_type][Bind._from_toml_str(bind)] = enum_type[name]
 
     def dumps(self) -> str:
+        """Dump keybindings to a string."""
         output: list[str] = ['version = "0.0"', ""]
         for enum_type, binds in self.binds.items():
             category = enum_type.__name__
@@ -189,15 +195,18 @@ class Keybindings:
         return "\n".join(output)
 
     def add_bind(self, enum: enum.Enum, bind: Bind) -> None:
+        """Add a single binding."""
         self.binds[type(enum)][bind] = enum
 
     def add_binds(self, bindings: dict[enum.Enum, Iterable[Bind]]) -> None:
+        """Add multiple keybindings at once."""
         for value, binds in bindings.items():
             enum_type = type(value)
             for bind in binds:
                 self.binds[enum_type][bind] = value
 
     def parse(self, event: tcod.event.Event, enum: type[_Enum]) -> _Enum | None:
+        """Return the enum value matching the provided event or None on no match."""
         if not isinstance(event, tcod.event.KeyboardEvent):
             return None
         binds = self.binds[enum]

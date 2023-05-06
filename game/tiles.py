@@ -27,6 +27,7 @@ class TileDB:
     __slots__ = ("data", "_identifiers", "_names", "__weakref__")
 
     def __init__(self, tiles: Iterable[dict[str, Any]] = ()) -> None:
+        """Initialize a tile database."""
         self.data: NDArray[Any] = np.zeros((1,), dtype=TILE_DTYPE)
         """The raw data table for this database.
 

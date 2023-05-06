@@ -10,6 +10,8 @@ keybindings = Keybindings()
 
 
 class MoveDir(NamedTuple):
+    """Relative move direction."""
+
     x: int
     y: int
 
@@ -38,6 +40,8 @@ keybindings.add_bind(System.ESCAPE, Bind(sym=KeySym.ESCAPE))
 
 @keybindings.register()
 class InGame(Enum):
+    """Standard in-game commands."""
+
     MOVE_N = MoveDir(0, -1)
     MOVE_NE = MoveDir(1, -1)
     MOVE_E = MoveDir(1, 0)

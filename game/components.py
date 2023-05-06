@@ -20,6 +20,8 @@ class Context:
 
 @attrs.define(frozen=True)
 class Position:
+    """The 2D position of an entity."""
+
     x: int = 0
     y: int = 0
 
@@ -39,10 +41,12 @@ class Position:
 
     @property
     def xy(self) -> tuple[int, int]:
+        """Return an (x, y) tuple."""
         return self.x, self.y
 
     @property
     def yx(self) -> tuple[int, int]:
+        """Return an (i, j) tuple, for Numpy indexing."""
         return self.y, self.x
 
 
@@ -53,6 +57,8 @@ class Direction(Position):
 
 @attrs.define(frozen=True)
 class Graphic:
+    """A simple entity graphic."""
+
     ch: int = ord("?")
     fg: tuple[int, int, int] = (255, 255, 255)
 

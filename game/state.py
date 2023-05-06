@@ -8,26 +8,33 @@ import tcod
 
 
 class State(Protocol):
+    """A state machine dispatch class. Subclasses define what a state does."""
+
     def on_event(self, event: tcod.event.Event) -> StateResult:
-        pass
+        """Handle an event and return a value which may affect the active state."""
 
     def on_draw(self, console: tcod.Console) -> None:
-        pass
+        """Visualize this state onto the given console."""
 
 
 @attrs.define(frozen=True)
 class Push:
+    """Push a new state on top of the stack."""
+
     state: State
 
 
 @attrs.define(frozen=True)
 class Pop:
-    pass
+    """Pop the top state off the stack, usually means the current state."""
 
 
 @attrs.define(frozen=True)
 class Reset:
+    """Delete the stack and replace it with a new state."""
+
     state: State
 
 
 StateResult = Push | Pop | Reset | None
+"""Common return values for State dispatch functions."""

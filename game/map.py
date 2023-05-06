@@ -64,5 +64,8 @@ class Map:
 
 @attrs.define(frozen=True)
 class MapKey:
+    """An immutable key used to lazily reference a map."""
+
     def generate(self, world: World) -> Entity:
+        """Generate this map with its own parameters."""
         raise NotImplementedError()
