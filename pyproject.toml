@@ -68,6 +68,7 @@ ignore = [
     "D407",   # dashed-underline-after-section
     "D408",   # section-underline-after-name
     "D409",   # section-underline-matches-section-length
+    "S311",   # suspicious-non-cryptographic-random-usage
 ]
 line-length = 120
 target-version = "py311"

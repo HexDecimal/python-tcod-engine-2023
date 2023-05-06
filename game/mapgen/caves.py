@@ -9,6 +9,7 @@ from numpy.typing import NDArray
 from tcod.ecs import Entity, World
 
 import game.map_tools
+import game.mapgen.test
 from game import map_attrs
 from game.components import Graphic, Position, Stairway
 from game.map import Map, MapKey
@@ -73,7 +74,7 @@ class CaveMap(MapKey):
                 [
                     Position(*free_spaces.pop()),
                     Graphic(ord("<")),
-                    Stairway(up=game.map_tools.TestMap(0) if self.level == 1 else CaveMap(self.level - 1)),
+                    Stairway(up=game.mapgen.test.TestMap() if self.level == 1 else CaveMap(self.level - 1)),
                 ]
             ),
         ]

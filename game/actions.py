@@ -1,4 +1,5 @@
 """Specialized common actions."""
+import random
 from collections.abc import Iterator
 from typing import NamedTuple
 
@@ -6,7 +7,7 @@ from tcod.ecs import Entity
 
 import game.actor_tools
 import game.map_tools
-from game.action import Action, Impossible, PollResult, Success
+from game.action import Action, Impossible, PlanResult, Success
 from game.components import Context, Direction, Player, Position, Stairway
 from game.map import Map, MapKey
 from game.map_attrs import a_tiles
@@ -17,7 +18,7 @@ from game.tiles import TileDB
 class Move(Action):
     """Move to an adjacent free space."""
 
-    def plan(self, actor: Entity) -> PollResult:
+    def plan(self, actor: Entity) -> PlanResult:
         world = actor.world
         context = world.global_.components[Context]
         dest = actor.components[Position] + self.data[Direction]
@@ -39,7 +40,7 @@ class Move(Action):
 class Bump(Action):
     """Context sensitive directional action."""
 
-    def plan(self, actor: Entity) -> PollResult:
+    def plan(self, actor: Entity) -> PlanResult:
         return Move([self.data[Direction]]).plan(actor)
 
 
@@ -71,7 +72,7 @@ class UseStairs(Action):
                 return self.PassageInfo(stairs, exit_passage, next_map_key)
         return None
 
-    def plan(self, actor: Entity) -> PollResult:
+    def plan(self, actor: Entity) -> PlanResult:
         if not self.get_stairs(actor):
             return Impossible("No stairs in that direction.")
         return self
@@ -82,3 +83,8 @@ class UseStairs(Action):
         actor.components[Position] = passage.exit.components[Position]
         actor.relation_tags[ChildOf] = game.map_tools.activate_map(actor.world, passage.next_map)
         return Success(time_passed=100)
+
+
+class RandomWalk(Action):
+    def plan(self, actor: Entity) -> PlanResult:
+        return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)

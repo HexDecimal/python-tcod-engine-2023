@@ -12,11 +12,11 @@ from tcod.ecs import Entity
 class Action:
     """An action which can be planned and can possibly be executed."""
 
-    def __init__(self, data: Iterable[object]) -> None:
+    def __init__(self, data: Iterable[object] = ()) -> None:
         """Construct an action with any relevant extra data."""
         self.data = ComponentDict(data)
 
-    def plan(self, actor: Entity) -> PollResult:
+    def plan(self, actor: Entity) -> PlanResult:
         """Check if an action can be done.  Return the action to execute if it can."""
         return self
 
@@ -51,5 +51,5 @@ class Impossible:
         return False
 
 
-PollResult = Action | Impossible
+PlanResult = Action | Impossible
 ActionResult = Success | Impossible

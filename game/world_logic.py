@@ -1,7 +1,9 @@
 """Tools for running world simulations."""
 from tcod.ecs import Entity, World
 
-from game.components import Context, Player
+from game.action import Action, Impossible, Success
+from game.components import Context
+from game.messages import MessageLog
 from game.sched import Ticket
 
 
@@ -15,5 +17,25 @@ def until_player_turn(world: World) -> None:
         if next_ticket is not entity.components[Ticket]:  # Ticket is invalid (possibly rescheduled).
             ctx.sched.pop()
             continue
-        if Player in entity.components:
+        if ("ai", Action) not in entity.components:
             return
+        do_action(entity, entity.components[("ai", Action)])
+
+
+def do_action(actor: Entity, action: Action) -> None:
+    """Perform the given action on the given actor."""
+    ctx = actor.world.global_.components[Context]
+    is_player = ("ai", Action) not in actor.components
+    match action.perform(actor):
+        case Success(time_passed=time_passed):
+            assert ctx.sched.peek() is actor.components[Ticket]
+            ctx.sched.pop()
+            actor.components[Ticket] = ctx.sched.schedule(time_passed, actor)
+        case Impossible(reason=reason):
+            if is_player:
+                actor.world.global_.components[MessageLog].append(reason)
+            else:
+                ctx.sched.pop()
+                actor.components[Ticket] = ctx.sched.schedule(100, actor)
+        case _:
+            raise NotImplementedError()
