@@ -4,8 +4,9 @@ from tcod.ecs import World
 import game.tiles
 from game.actor_tools import new_actor
 from game.components import Context, Graphic, MapDict, Player, Position
+from game.map import UniqueMapKey
 from game.map_tools import activate_map
-from game.mapgen.test import TestMap
+from game.mapgen.test import test_map
 from game.messages import MessageLog
 
 
@@ -21,6 +22,6 @@ def new_world() -> World:
     )
     game.tiles.init(world)
     ctx = world.global_.components[Context]
-    activate_map(world, TestMap())
+    activate_map(world, UniqueMapKey(test_map))
     ctx.player = new_actor(ctx.active_map, (Position(1, 1), Graphic(ord("@")), Player()))
     return world

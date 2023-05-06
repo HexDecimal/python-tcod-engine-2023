@@ -1,5 +1,5 @@
 """Defines the Map class."""
-from collections.abc import Hashable
+from collections.abc import Callable, Hashable
 from typing import Any, TypeVar
 
 import attrs
@@ -69,3 +69,11 @@ class MapKey:
     def generate(self, world: World) -> Entity:
         """Generate this map with its own parameters."""
         raise NotImplementedError()
+
+
+@attrs.define(frozen=True)
+class UniqueMapKey(MapKey):
+    generator: Callable[[World], Entity]
+
+    def generate(self, world: World) -> Entity:
+        return self.generator(world)

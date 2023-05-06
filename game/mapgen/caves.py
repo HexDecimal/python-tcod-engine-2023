@@ -12,7 +12,7 @@ import game.map_tools
 import game.mapgen.test
 from game import map_attrs
 from game.components import Graphic, Position, Stairway
-from game.map import Map, MapKey
+from game.map import Map, MapKey, UniqueMapKey
 from game.tags import ChildOf
 from game.tiles import TileDB
 
@@ -74,7 +74,9 @@ class CaveMap(MapKey):
                 [
                     Position(*free_spaces.pop()),
                     Graphic(ord("<")),
-                    Stairway(up=game.mapgen.test.TestMap() if self.level == 1 else CaveMap(self.level - 1)),
+                    Stairway(
+                        up=UniqueMapKey(game.mapgen.test.test_map) if self.level == 1 else CaveMap(self.level - 1)
+                    ),
                 ]
             ),
         ]
