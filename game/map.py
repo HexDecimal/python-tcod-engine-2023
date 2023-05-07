@@ -1,6 +1,7 @@
 """Defines the Map class."""
+import inspect
 from collections.abc import Callable, Hashable
-from typing import Any, TypeVar
+from typing import Any, Concatenate, ParamSpec, TypeVar
 
 import attrs
 import numpy as np
@@ -8,6 +9,7 @@ from numpy.typing import DTypeLike, NDArray
 from tcod.ecs import Entity, World
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class MapAttribute:
@@ -71,9 +73,22 @@ class MapKey:
         raise NotImplementedError()
 
 
-@attrs.define(frozen=True)
+@attrs.define(frozen=True, init=False)
 class UniqueMapKey(MapKey):
-    generator: Callable[[World], Entity]
+    """Define a unique map as a generator function with the provided parameters."""
+
+    generator: Callable[..., Entity]
+    kwargs: frozenset[tuple[str, Any]]
+
+    def __init__(self, generator: Callable[Concatenate[World, P], Entity], *args: P.args, **kwargs: P.kwargs) -> None:
+        """Initialize a map key with a generator function and all arguments rebound to keywords."""
+        signature = inspect.signature(generator)
+        signature = signature.replace(
+            parameters=[param for param in signature.parameters.values() if param.name != "world"]
+        )
+        bound_kwargs = signature.bind_partial(*args, **kwargs).arguments
+        self.__attrs_init__(generator, frozenset(bound_kwargs.items()))
 
     def generate(self, world: World) -> Entity:
-        return self.generator(world)
+        """Return a map generated from the stored function and arguments."""
+        return self.generator(world=world, **dict(self.kwargs))
