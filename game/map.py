@@ -77,7 +77,3 @@ class MapKey:
         signature = signature.replace(parameters=list(signature.parameters.values())[1:])
         bound_kwargs = signature.bind_partial(*args, **kwargs).arguments
         self.__attrs_init__(generator, frozenset(bound_kwargs.items()))
-
-    def generate(self, world: World) -> Entity:
-        """Return a map generated from the stored function and arguments."""
-        return self.generator(world=world, **dict(self.kwargs))

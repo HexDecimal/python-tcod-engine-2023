@@ -21,7 +21,7 @@ def get_map(world: World, key: MapKey) -> Entity:
     """Return a map from a MapKey, generating it if required."""
     map_dict = world.global_.components[MapDict]
     if key not in map_dict:
-        map_dict[key] = key.generate(world)
+        map_dict[key] = key.generator(world, **dict(key.kwargs))
     return map_dict[key]
 
 
