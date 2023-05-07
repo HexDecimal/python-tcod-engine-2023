@@ -75,5 +75,5 @@ class MapKey:
         """Initialize a map key with a generator function and all arguments rebound to keywords."""
         signature = inspect.signature(generator)
         signature = signature.replace(parameters=list(signature.parameters.values())[1:])
-        bound_kwargs = signature.bind_partial(*args, **kwargs).arguments
+        bound_kwargs = signature.bind(*args, **kwargs).arguments
         self.__attrs_init__(generator, frozenset(bound_kwargs.items()))
