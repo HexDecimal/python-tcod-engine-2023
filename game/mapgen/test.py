@@ -8,7 +8,7 @@ from game.action import Action
 from game.actions import RandomWalk
 from game.actor_tools import new_actor
 from game.components import Graphic, Position, Stairway
-from game.map import UniqueMapKey
+from game.map import MapKey
 from game.map_tools import new_map
 from game.tags import ChildOf
 
@@ -22,7 +22,7 @@ def test_map(world: World) -> Entity:
             [
                 Position(*free_spaces.pop()),
                 Graphic(ord(">")),
-                Stairway(down=UniqueMapKey(game.mapgen.caves.new_cave, level=1)),
+                Stairway(down=MapKey(game.mapgen.caves.new_cave, level=1)),
             ]
         ),
     ]

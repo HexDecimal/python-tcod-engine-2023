@@ -64,18 +64,9 @@ class Map:
         del self._data[attr.key]
 
 
-@attrs.define(frozen=True)
-class MapKey:
-    """An immutable key used to lazily reference a map."""
-
-    def generate(self, world: World) -> Entity:
-        """Generate this map with its own parameters."""
-        raise NotImplementedError()
-
-
 @attrs.define(frozen=True, init=False)
-class UniqueMapKey(MapKey):
-    """Define a unique map as a generator function with the provided parameters."""
+class MapKey:
+    """A unique hashable map key defined as a generator function with the provided parameters."""
 
     generator: Callable[..., Entity]
     kwargs: frozenset[tuple[str, Any]]
@@ -83,9 +74,7 @@ class UniqueMapKey(MapKey):
     def __init__(self, generator: Callable[Concatenate[World, P], Entity], *args: P.args, **kwargs: P.kwargs) -> None:
         """Initialize a map key with a generator function and all arguments rebound to keywords."""
         signature = inspect.signature(generator)
-        signature = signature.replace(
-            parameters=[param for param in signature.parameters.values() if param.name != "world"]
-        )
+        signature = signature.replace(parameters=list(signature.parameters.values())[1:])
         bound_kwargs = signature.bind_partial(*args, **kwargs).arguments
         self.__attrs_init__(generator, frozenset(bound_kwargs.items()))
 

@@ -11,7 +11,7 @@ import game.map_tools
 import game.mapgen.test
 from game import map_attrs
 from game.components import Graphic, Position, Stairway
-from game.map import Map, UniqueMapKey
+from game.map import Map, MapKey
 from game.tags import ChildOf
 from game.tiles import TileDB
 
@@ -64,16 +64,12 @@ def new_cave(world: World, level: int) -> Entity:
     free_spaces = free_spaces_.tolist()
 
     features = [
-        world.new_entity(
-            [Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=UniqueMapKey(new_cave, level + 1))]
-        ),
+        world.new_entity([Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=MapKey(new_cave, level + 1))]),
         world.new_entity(
             [
                 Position(*free_spaces.pop()),
                 Graphic(ord("<")),
-                Stairway(
-                    up=UniqueMapKey(game.mapgen.test.test_map) if level == 1 else UniqueMapKey(new_cave, level - 1)
-                ),
+                Stairway(up=MapKey(game.mapgen.test.test_map) if level == 1 else MapKey(new_cave, level - 1)),
             ]
         ),
     ]
