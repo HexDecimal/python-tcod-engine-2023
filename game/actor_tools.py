@@ -16,13 +16,12 @@ from game.tags import IsActor
 from game.tiles import TileDB
 
 
-def new_actor(parent: Entity, components: Iterable[object] = ()) -> Entity:
+def new_actor(parent: Entity, components: Iterable[object] = (), tags: Iterable[object] = ()) -> Entity:
     """Spawn a new actor with the given components."""
     world = parent.world
     ctx = world.global_.components[Context]
-    actor = world.new_entity([Position(0, 0), Graphic(), *components])
+    actor = world.new_entity([Position(0, 0), Graphic(), *components], tags=(IsActor, *tags))
     actor.components[Ticket] = ctx.sched.schedule(0, actor)
-    actor.tags.add(IsActor)
     actor.relation_tags["ChildOf"] = parent
     return actor
 

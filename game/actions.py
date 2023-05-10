@@ -8,10 +8,10 @@ from tcod.ecs import Entity
 import game.actor_tools
 import game.map_tools
 from game.action import Action, Impossible, PlanResult, Success
-from game.components import Context, Direction, Player, Position, Stairway
+from game.components import Context, Direction, Position, Stairway
 from game.map import Map, MapKey
 from game.map_attrs import a_tiles
-from game.tags import ChildOf
+from game.tags import ChildOf, IsPlayer
 from game.tiles import TileDB
 
 
@@ -32,7 +32,7 @@ class Move(Action):
     def execute(self, actor: Entity) -> Success:
         dest = actor.components[Position] + self.data[Direction]
         actor.components[Position] = dest
-        if Player in actor.components:
+        if IsPlayer in actor.tags:
             game.actor_tools.compute_fov(actor)
         return Success(time_passed=100)
 
