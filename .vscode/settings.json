@@ -30,6 +30,7 @@
         "dejavu",
         "dtype",
         "getnewargs",
+        "isort",
         "KMOD",
         "mapgen",
         "ndimage",
