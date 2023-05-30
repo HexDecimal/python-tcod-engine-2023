@@ -48,9 +48,9 @@ def main() -> None:
             console = g.context.new_console(30, 20)
             g.state[-1].on_draw(console)
             g.context.present(console, keep_aspect=True, integer_scaling=True)
-            for event in tcod.event.wait():
-                event = g.context.convert_event(event)
-                handle_state(g.state[-1].on_event(event))
+            for event_pixels in tcod.event.wait():
+                event_tiles = g.context.convert_event(event_pixels)
+                handle_state(g.state[-1].on_event(event_tiles))
 
 
 if __name__ == "__main__":
