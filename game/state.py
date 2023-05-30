@@ -4,7 +4,8 @@ from __future__ import annotations
 from typing import Protocol
 
 import attrs
-import tcod
+import tcod.console
+import tcod.event
 
 
 class State(Protocol):
@@ -13,7 +14,7 @@ class State(Protocol):
     def on_event(self, event: tcod.event.Event) -> StateResult:
         """Handle an event and return a value which may affect the active state."""
 
-    def on_draw(self, console: tcod.Console) -> None:
+    def on_draw(self, console: tcod.console.Console) -> None:
         """Visualize this state onto the given console."""
 
 

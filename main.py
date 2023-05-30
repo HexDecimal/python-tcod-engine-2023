@@ -4,7 +4,8 @@ import logging
 import sys
 import warnings
 
-import tcod
+import tcod.context
+import tcod.tileset
 
 import g
 import game.state

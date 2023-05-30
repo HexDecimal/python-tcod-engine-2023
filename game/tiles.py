@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from typing import Any
 
 import numpy as np
-import tcod
+import tcod.console
 from numpy.typing import NDArray
 from tcod.ecs import World
 

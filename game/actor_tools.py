@@ -3,7 +3,7 @@ import itertools
 from collections.abc import Iterable
 
 import numpy as np
-import tcod
+import tcod.constants
 import tcod.map
 from tcod.ecs import Entity
 
@@ -56,7 +56,7 @@ def compute_fov(actor: Entity, update_memory: bool = True) -> ActiveFOV:
     transparency = tile_db.data["transparent"][active_map.components[Map][game.map_attrs.a_tiles]]
     fov = ActiveFOV(
         visible=tcod.map.compute_fov(
-            transparency=transparency, pov=actor_pos.yx, radius=10, algorithm=tcod.FOV_SYMMETRIC_SHADOWCAST
+            transparency=transparency, pov=actor_pos.yx, radius=10, algorithm=tcod.constants.FOV_SYMMETRIC_SHADOWCAST
         ),
         active_map=active_map,
         active_pos=actor_pos,

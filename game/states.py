@@ -2,7 +2,8 @@
 from collections.abc import Callable, Iterable
 
 import attrs
-import tcod
+import tcod.console
+import tcod.event
 
 import g
 import game.action
@@ -40,7 +41,7 @@ class InGame(State):
         game.world_logic.do_action(g.world.global_.components[Context].player, action)
         return None
 
-    def on_draw(self, console: tcod.Console) -> None:
+    def on_draw(self, console: tcod.console.Console) -> None:
         game.rendering.render_all(g.world, console)
 
 
@@ -112,7 +113,7 @@ class Menu(State):
                 return self.on_cancel()
         return None
 
-    def on_draw(self, console: tcod.Console) -> None:
+    def on_draw(self, console: tcod.console.Console) -> None:
         this_index = g.state.index(self)
         if this_index > 0:
             g.state[this_index - 1].on_draw(console)

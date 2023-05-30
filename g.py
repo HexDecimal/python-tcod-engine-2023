@@ -1,5 +1,5 @@
 """Explicitly mutable global names."""
-import tcod
+import tcod.context
 import tcod.ecs
 
 import game.state
