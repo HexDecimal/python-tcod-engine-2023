@@ -15,7 +15,7 @@ P = ParamSpec("P")
 class MapAttribute:
     """A generic map attribute used as a key for generic maps."""
 
-    def __init__(self, key: Hashable | None, dtype: DTypeLike, default: Any = 0) -> None:
+    def __init__(self, key: Hashable | None, dtype: DTypeLike, default: Any = 0) -> None:  # noqa: ANN401
         self.key = key if key is not None else self
         self.dtype = np.dtype(dtype)
         self.default = default

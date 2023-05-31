@@ -55,7 +55,6 @@ select = [
     "TRY", # tryceratops
     "RUF", # NumPy-specific rules
     "G",   # flake8-logging-format
-    "D",   # pydocstyle
 ]
 ignore = [
     "E501",   # line-too-long
