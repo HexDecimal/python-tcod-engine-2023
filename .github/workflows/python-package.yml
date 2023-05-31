@@ -10,6 +10,7 @@ env:
   python-version: "3.11"
   pyinstaller-version: "5.6.2"
   project-name: roguelike-tutorial
+  archive-name:  # Is set dynamcially
 
 jobs:
   package:
