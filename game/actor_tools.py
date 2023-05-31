@@ -22,6 +22,9 @@ def new_actor(parent: Entity, components: Iterable[object] = (), tags: Iterable[
     ctx = world.global_.components[Context]
     actor = world.new_entity([Position(0, 0), Graphic(), *components], tags=(IsActor, *tags))
     actor.components[Ticket] = ctx.sched.schedule(0, actor)
+    actor.components[("hp", int)] = actor.components[("max_hp", int)] = 10
+    actor.components[("attack", int)] = 4
+
     actor.relation_tags["ChildOf"] = parent
     return actor
 

@@ -6,12 +6,13 @@ from typing import NamedTuple
 from tcod.ecs import Entity
 
 import game.actor_tools
+import game.combat
 import game.map_tools
 from game.action import Action, Impossible, PlanResult, Success
 from game.components import Context, Direction, Position, Stairway
 from game.map import Map, MapKey
 from game.map_attrs import a_tiles
-from game.tags import ChildOf, IsPlayer
+from game.tags import ChildOf, IsActor, IsPlayer
 from game.tiles import TileDB
 
 
@@ -37,10 +38,35 @@ class Move(Action):
         return Success(time_passed=100)
 
 
+class Melee(Action):
+    """Melee attack target."""
+
+    def plan(self, actor: Entity) -> PlanResult:
+        direction = self.data[Entity].components[Position] - actor.components[Position]
+        if min(abs(direction.x), abs(direction.y)) > 1:
+            return Impossible("Target is out of range.")
+        return self
+
+    def execute(self, actor: Entity) -> Success:
+        target = self.data[Entity]
+        damage = actor.components[("attack", int)]
+        print(f"Attacking {target} for {damage} damage.")
+        target.components[("hp", int)] -= damage
+        if target.components[("hp", int)] < 0:
+            game.combat.kill(target)
+        return Success(time_passed=100)
+
+
 class Bump(Action):
     """Context sensitive directional action."""
 
     def plan(self, actor: Entity) -> PlanResult:
+        dest = actor.components[Position] + self.data[Direction]
+        for target in actor.world.Q.all_of([Position], tags=[IsActor]):
+            if target.components[Position] == dest and target is not actor:
+                result = Melee([target]).plan(actor)
+                if result:
+                    return result
         return Move([self.data[Direction]]).plan(actor)
 
 
@@ -87,4 +113,5 @@ class UseStairs(Action):
 
 class RandomWalk(Action):
     def plan(self, actor: Entity) -> PlanResult:
+        return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)
         return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)

@@ -14,7 +14,7 @@ def until_player_turn(world: World) -> None:
         next_ticket = ctx.sched.peek()
         entity = next_ticket.value
         assert isinstance(entity, Entity)
-        if next_ticket is not entity.components[Ticket]:  # Ticket is invalid (possibly rescheduled).
+        if next_ticket is not entity.components.get(Ticket):  # Ticket is invalid (possibly rescheduled).
             ctx.sched.pop()
             continue
         if ("ai", Action) not in entity.components:

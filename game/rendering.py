@@ -40,6 +40,11 @@ def render_all(world: World, console: tcod.console.Console) -> None:
     log_console.blit(console, dest_x=0, dest_y=console.height - log_console.height)
 
     side_console.print(0, 0, f"Turn: {world.global_.components[Context].sched.time}", fg=(255, 255, 255))
+    player = world.global_.components[Context].player
+    side_console.print(
+        0, 1, f"""HP: {player.components[("hp", int)]}/{player.components[("max_hp", int)]}""", fg=(255, 255, 255)
+    )
+
     side_console.blit(console, dest_x=console.width - side_console.width, dest_y=0)
 
 
