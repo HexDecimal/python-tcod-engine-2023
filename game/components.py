@@ -40,6 +40,14 @@ class Position:
         return NotImplemented
 
     @property
+    def chebyshev_normalize(self) -> Self:
+        """Normalize this vector to a single step in Chebyshev distance."""
+        return self.__class__(
+            0 if self.x == 0 else -1 if self.x < 0 else 1,
+            0 if self.y == 0 else -1 if self.y < 0 else 1,
+        )
+
+    @property
     def xy(self) -> tuple[int, int]:
         """Return an (x, y) tuple."""
         return self.x, self.y

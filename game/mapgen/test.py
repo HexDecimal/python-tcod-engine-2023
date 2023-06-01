@@ -5,7 +5,7 @@ from tcod.ecs import Entity, World
 
 import game.mapgen.caves
 from game.action import Action
-from game.actions import RandomWalk
+from game.actions import AttackPlayer
 from game.actor_tools import new_actor
 from game.components import Graphic, Position, Stairway
 from game.map import MapKey
@@ -35,7 +35,8 @@ def test_map(world: World) -> Entity:
             {
                 Position: Position(*free_spaces.pop()),
                 Graphic: Graphic(ord("a")),
-                ("ai", Action): RandomWalk(),
+                ("ai", Action): AttackPlayer(),
             }
         )
+        ai_actor.components[("attack", int)] = 2
     return map

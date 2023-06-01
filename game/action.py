@@ -29,7 +29,7 @@ class Action:
         result = self.plan(actor)
         if not isinstance(result, Action):
             return result
-        assert result.plan(actor) is result
+        assert result.plan(actor) is result, f"Planning was not finished, make sure plan is called on {result}."
         return result.execute(actor)
 
 

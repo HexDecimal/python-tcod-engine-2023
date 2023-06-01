@@ -27,6 +27,7 @@
         "argwhere",
         "astype",
         "blit",
+        "Chebyshev",
         "dejavu",
         "dtype",
         "getnewargs",

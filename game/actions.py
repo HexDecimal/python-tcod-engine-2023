@@ -114,3 +114,16 @@ class UseStairs(Action):
 class RandomWalk(Action):
     def plan(self, actor: Entity) -> PlanResult:
         return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)
+
+
+class AttackPlayer(Action):
+    """Seek and attack the player."""
+
+    def plan(self, actor: Entity) -> PlanResult:
+        """Bump towards the player actor."""
+        targets = list(actor.world.Q.all_of(tags=[IsPlayer], relations=[(ChildOf, actor.relation_tags[ChildOf])]))
+        if not targets:
+            return Impossible("No visible targets.")
+        target = targets[0]
+        direction = (target.components[Position] - actor.components[Position]).chebyshev_normalize
+        return Bump([Direction(*direction.xy)]).plan(actor)
