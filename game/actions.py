@@ -114,4 +114,3 @@ class UseStairs(Action):
 class RandomWalk(Action):
     def plan(self, actor: Entity) -> PlanResult:
         return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)
-        return Bump([Direction(random.randint(-1, 1), random.randint(-1, 1))]).plan(actor)
