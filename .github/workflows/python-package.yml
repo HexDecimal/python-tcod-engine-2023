@@ -8,8 +8,8 @@ defaults:
 
 env:
   python-version: "3.11"
-  pyinstaller-version: "5.6.2"
-  project-name: roguelike-tutorial
+  pyinstaller-version: "5.11.0"
+  project-name: python-tcod-engine-2023
   archive-name:  # Is set dynamcially
 
 jobs:
@@ -72,7 +72,7 @@ jobs:
       - name: "Upload Artifact"
         uses: actions/upload-artifact@v3
         with:
-          name: automated-builds
+          name: build-${{ matrix.platform-name }}
           path: ${{ env.archive-name }}.*
           retention-days: 7
           if-no-files-found: error
@@ -86,3 +86,40 @@ jobs:
           file_glob: true
           tag: ${{ github.ref }}
           overwrite: true
+  butler:
+    needs: [package]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: release
+      url: https://hexdecimal.itch.io/python-tcod-engine-2023
+    strategy:
+      matrix:
+        platform-name: [windows.x64, macos.x64, linux.x64]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-${{ matrix.platform-name }}
+      - name: Unzip Archive
+        if: matrix.platform-name == 'windows.x64'
+        run: unzip ${{ env.project-name }}*.zip -d dist/
+      - name: Untar Archive
+        if: matrix.platform-name != 'windows.x64'
+        run: |
+          mkdir dist
+          tar --extract --gzip --file *.tar.gz --directory=dist/ --verbose
+      - name: Install Butler
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir ~/bin
+          cd ~/bin
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          echo "~/bin" >> $GITHUB_PATH
+          ~/bin/butler -V
+      - name: Upload to Itch
+        if: github.ref == 'refs/heads/main'
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: butler push dist/*/ hexdecimal/${{ env.project-name }}:${{ matrix.platform-name }}-latest
