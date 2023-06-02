@@ -4,7 +4,7 @@ target-version = ["py311"]
 line-length = 120
 
 [tool.isort] # https://pycqa.github.io/isort/docs/configuration/options.html
-py_version = "310"
+py_version = "311"
 line_length = 120
 profile = "black"
 skip_gitignore = true
@@ -44,6 +44,7 @@ select = [
     "DTZ", # flake8-datetimez
     "EM",  # flake8-errmsg
     "EXE", # flake8-executable
+    "FA",  # flake8-future-annotations
     "RET", # flake8-return
     "ICN", # flake8-import-conventions
     "INP", # flake8-no-pep420

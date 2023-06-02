@@ -8,6 +8,7 @@ import tcod.context
 import tcod.tileset
 
 import g
+import game.monsters
 import game.state
 import game.states
 import game.world_logic

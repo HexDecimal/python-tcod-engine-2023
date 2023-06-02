@@ -1,0 +1,14 @@
+[player]
+hp = 10
+attack = 4
+ch = "@"
+
+[orc]
+hp = 10
+attack = 2
+ch = "o"
+
+["giant ant"]
+hp = 5
+attack = 2
+ch = "a"

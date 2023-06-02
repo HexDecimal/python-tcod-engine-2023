@@ -14,7 +14,7 @@
     "python.formatting.provider": "none",
     "editor.codeActionsOnSave": {
         "source.fixAll": true, // Ruff fixes.
-        "source.organizeImports": true // Runs isort.
+        "source.organizeImports": false // Skip isort, handled by Ruff
     },
     "editor.rulers": [
         120
