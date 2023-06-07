@@ -31,7 +31,7 @@ def render_all(world: World, console: tcod.console.Console) -> None:
     side_console = tcod.console.Console(SIDEBAR_WIDTH, console.height)
 
     y = log_console.height
-    for message in reversed(world.global_.components[MessageLog].log):
+    for message in reversed(world[None].components[MessageLog].log):
         text = str(message)
         y -= tcod.console.get_height_rect(log_console.width, text)
         log_console.print_box(0, y, log_console.width, 0, text, (255, 255, 255))
@@ -39,8 +39,8 @@ def render_all(world: World, console: tcod.console.Console) -> None:
             break
     log_console.blit(console, dest_x=0, dest_y=console.height - log_console.height)
 
-    side_console.print(0, 0, f"Turn: {world.global_.components[Context].sched.time}", fg=(255, 255, 255))
-    player = world.global_.components[Context].player
+    side_console.print(0, 0, f"Turn: {world[None].components[Context].sched.time}", fg=(255, 255, 255))
+    player = world[None].components[Context].player
     side_console.print(
         0, 1, f"""HP: {player.components[("hp", int)]}/{player.components[("max_hp", int)]}""", fg=(255, 255, 255)
     )
@@ -50,10 +50,10 @@ def render_all(world: World, console: tcod.console.Console) -> None:
 
 def render_map(world: World, out: NDArray[Any]) -> None:
     """Render the active world map, showing visible and remembered tiles/objects."""
-    map = world.global_.components[Context].active_map
+    map = world[None].components[Context].active_map
     map_data = map.components[Map]
-    player = world.global_.components[Context].player
-    tiles_db = world.global_.components[TileDB]
+    player = world[None].components[Context].player
+    tiles_db = world[None].components[TileDB]
     player_pos = player.components[Position]
     player_memory = game.actor_tools.get_memory(player)
     player_fov = game.actor_tools.compute_fov(player)

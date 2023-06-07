@@ -9,7 +9,7 @@ from game.sched import Ticket
 
 def until_player_turn(world: World) -> None:
     """Run scheduled entities in order until the player is next."""
-    ctx = world.global_.components[Context]
+    ctx = world[None].components[Context]
     while True:
         next_ticket = ctx.sched.peek()
         entity = next_ticket.value
@@ -24,7 +24,7 @@ def until_player_turn(world: World) -> None:
 
 def do_action(actor: Entity, action: Action) -> None:
     """Perform the given action on the given actor."""
-    ctx = actor.world.global_.components[Context]
+    ctx = actor.world[None].components[Context]
     is_player = ("ai", Action) not in actor.components
     match action.perform(actor):
         case Success(time_passed=time_passed):
@@ -33,7 +33,7 @@ def do_action(actor: Entity, action: Action) -> None:
             actor.components[Ticket] = ctx.sched.schedule(time_passed, actor)
         case Impossible(reason=reason):
             if is_player:
-                actor.world.global_.components[MessageLog].append(reason)
+                actor.world[None].components[MessageLog].append(reason)
             else:
                 ctx.sched.pop()
                 actor.components[Ticket] = ctx.sched.schedule(100, actor)

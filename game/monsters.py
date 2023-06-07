@@ -55,7 +55,7 @@ def spawn(race: str, parent: Entity, pos: Position) -> Entity:
         init()
     race_info = monster_db[race]
     world = parent.world
-    ctx = world.global_.components[Context]
+    ctx = world[None].components[Context]
     actor = world.new_entity(tags=[IsActor])
     actor.components.update(
         {

@@ -10,7 +10,7 @@ from game.tiles import TileDB
 
 def new_map(world: World, width: int, height: int) -> Entity:
     """Return a new map with a simple blank default."""
-    tile_db = world.global_.components[TileDB]
+    tile_db = world[None].components[TileDB]
     map = Map(width, height)
     map[map_attrs.a_tiles][:] = tile_db["wall"]
     map[map_attrs.a_tiles][1:-1, 1:-1] = tile_db["floor"]
@@ -19,7 +19,7 @@ def new_map(world: World, width: int, height: int) -> Entity:
 
 def get_map(world: World, key: MapKey) -> Entity:
     """Return a map from a MapKey, generating it if required."""
-    map_dict = world.global_.components[MapDict]
+    map_dict = world[None].components[MapDict]
     if key not in map_dict:
         map_dict[key] = key.generator(world, **dict(key.kwargs))
     return map_dict[key]
@@ -27,5 +27,5 @@ def get_map(world: World, key: MapKey) -> Entity:
 
 def activate_map(world: World, key: MapKey) -> Entity:
     """Set a map as active and return it."""
-    world.global_.components[Context].active_map = new_map = get_map(world, key)
+    world[None].components[Context].active_map = new_map = get_map(world, key)
     return new_map

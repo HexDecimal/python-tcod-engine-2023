@@ -83,9 +83,9 @@ class TileDB:
 
 def init(world: World) -> None:
     """Initialize or update the TileDB component on a world."""
-    if TileDB not in world.global_.components:
-        world.global_.components[TileDB] = TileDB()
-    tile_db = world.global_.components[TileDB]
+    if TileDB not in world[None].components:
+        world[None].components[TileDB] = TileDB()
+    tile_db = world[None].components[TileDB]
     tile_db.register("", graphic=(ord("?"), (0xFF, 0xFF, 0xFF), (0xFF, 0x0, 0xFF)), transparent=True, walk_cost=1)
     tile_db.register("floor", graphic=(ord("."), (0x44, 0x44, 0x44), (0x0, 0x0, 0x0)), transparent=True, walk_cost=1)
     tile_db.register("wall", graphic=(ord(" "), (0xFF, 0xFF, 0xFF), (0x88, 0x88, 0x88)), transparent=False, walk_cost=0)

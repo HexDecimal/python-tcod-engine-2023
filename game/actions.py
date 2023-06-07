@@ -21,12 +21,12 @@ class Move(Action):
 
     def plan(self, actor: Entity) -> PlanResult:
         world = actor.world
-        context = world.global_.components[Context]
+        context = world[None].components[Context]
         dest = actor.components[Position] + self.data[Direction]
         active_map = context.active_map.components[Map]
         if not (0 <= dest.x < active_map.width and 0 <= dest.y < active_map.height):
             return Impossible("Blocked.")
-        if world.global_.components[TileDB].data["walk_cost"][active_map[a_tiles][dest.yx]] > 0:
+        if world[None].components[TileDB].data["walk_cost"][active_map[a_tiles][dest.yx]] > 0:
             return self
         return Impossible("Blocked.")
 
@@ -83,7 +83,7 @@ class UseStairs(Action):
         world = actor.world
         actor_pos = actor.components[Position]
         inverse_dir = {"up": "down", "down": "up"}[self.data[str]]
-        for stairs in self.iter_stairs(world.global_.components[Context].active_map):
+        for stairs in self.iter_stairs(world[None].components[Context].active_map):
             if stairs.components[Position] != actor_pos:
                 continue
             next_map_key = (

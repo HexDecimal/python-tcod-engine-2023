@@ -19,7 +19,7 @@ from game.tiles import TileDB
 def new_actor(parent: Entity, components: Iterable[object] = (), tags: Iterable[object] = ()) -> Entity:
     """Spawn a new actor with the given components."""
     world = parent.world
-    ctx = world.global_.components[Context]
+    ctx = world[None].components[Context]
     actor = world.new_entity([Position(0, 0), Graphic(), *components], tags=(IsActor, *tags))
     actor.components[Ticket] = ctx.sched.schedule(0, actor)
     actor.components[("hp", int)] = actor.components[("max_hp", int)] = 10
@@ -31,7 +31,7 @@ def new_actor(parent: Entity, components: Iterable[object] = (), tags: Iterable[
 
 def get_memory(actor: Entity) -> MemoryLayer:
     """Return the actors memory of the active map."""
-    active_map = actor.world.global_.components[Context].active_map
+    active_map = actor.world[None].components[Context].active_map
     if Memory not in actor.components:
         actor.components[Memory] = Memory()
     memory = actor.components[Memory]
@@ -49,13 +49,13 @@ def compute_fov(actor: Entity, update_memory: bool = True) -> ActiveFOV:
     If `update_memory` is True then commit the viewed objects to memory.
     """
     world = actor.world
-    active_map = world.global_.components[Context].active_map
+    active_map = world[None].components[Context].active_map
     actor_pos = actor.components[Position]
     fov = actor.components.get(ActiveFOV)
     if fov and fov.active_map is active_map and fov.active_pos == actor_pos:
         return fov
 
-    tile_db = world.global_.components[TileDB]
+    tile_db = world[None].components[TileDB]
     transparency = tile_db.data["transparent"][active_map.components[Map][game.map_attrs.a_tiles]]
     fov = ActiveFOV(
         visible=tcod.map.compute_fov(

@@ -38,7 +38,7 @@ class InGame(State):
         return None
 
     def do_action(self, action: game.action.Action) -> StateResult:
-        game.world_logic.do_action(g.world.global_.components[Context].player, action)
+        game.world_logic.do_action(g.world[None].components[Context].player, action)
         return None
 
     def on_draw(self, console: tcod.console.Console) -> None:

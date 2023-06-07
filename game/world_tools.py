@@ -14,7 +14,7 @@ from game.tags import IsPlayer
 def new_world() -> World:
     """Return a newly generated World."""
     world = World()
-    world.global_.components.update(
+    world[None].components.update(
         {
             Context: Context(),
             MapDict: MapDict(),
@@ -22,7 +22,7 @@ def new_world() -> World:
         }
     )
     game.tiles.init(world)
-    ctx = world.global_.components[Context]
+    ctx = world[None].components[Context]
     activate_map(world, MapKey(test_map))
     ctx.player = spawn("player", ctx.active_map, Position(1, 1))
     ctx.player.tags.add(IsPlayer)

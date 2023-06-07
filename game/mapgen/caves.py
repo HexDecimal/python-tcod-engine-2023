@@ -26,7 +26,7 @@ def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
 
 def new_cave(world: World, level: int) -> Entity:
     assert level > 0
-    tiles_db = world.global_.components[TileDB]
+    tiles_db = world[None].components[TileDB]
     rng = np.random.default_rng()
 
     map = game.map_tools.new_map(world, 50, 50)
