@@ -32,10 +32,10 @@ class MonsterType:
     """A creature definition."""
 
     name: str = attrs.field(converter=str)
-    ch: int = attrs.field(converter=_convert_ch)
-    fg: tuple[int, int, int] = attrs.field(converter=_convert_color)
     hp: int = attrs.field(converter=int)
     attack: int = attrs.field(converter=int)
+    ch: int = attrs.field(default=ord("?"), converter=_convert_ch)
+    fg: tuple[int, int, int] = attrs.field(default=(255, 255, 255), converter=_convert_color)
 
 
 monster_db: dict[str, MonsterType] = {}
@@ -46,14 +46,7 @@ def init() -> None:
     """Initialize the monster database."""
     data: dict[str, Any]
     for name, data in tomllib.loads(Path("data/monsters.toml").read_text(encoding="utf-8")).items():
-        monster_db[name] = MonsterType(
-            name=name,
-            ch=data.pop("ch", "?"),
-            fg=data.pop("fg", (255, 255, 255)),
-            hp=data.pop("hp"),
-            attack=data.pop("attack"),
-        )
-        assert not data, f"Unhandled data: {data}"
+        monster_db[name] = MonsterType(name=name, **data)
 
 
 def spawn(race: str, parent: Entity, pos: Position) -> Entity:
