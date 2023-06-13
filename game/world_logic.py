@@ -1,10 +1,14 @@
 """Tools for running world simulations."""
+import logging
+
 from tcod.ecs import Entity, World
 
 from game.action import Action, Impossible, Success
 from game.components import Context
 from game.messages import MessageLog
 from game.sched import Ticket
+
+logger = logging.getLogger(__name__)
 
 
 def until_player_turn(world: World) -> None:
@@ -17,7 +21,8 @@ def until_player_turn(world: World) -> None:
         if next_ticket is not entity.components.get(Ticket):  # Ticket is invalid (possibly rescheduled).
             ctx.sched.pop()
             continue
-        if ("ai", Action) not in entity.components:
+        ai_action = entity.components.get(("ai", Action))
+        if ai_action is None:
             return
         do_action(entity, entity.components[("ai", Action)])
 
@@ -35,6 +40,7 @@ def do_action(actor: Entity, action: Action) -> None:
             if is_player:
                 actor.world[None].components[MessageLog].append(reason)
             else:
+                logger.debug("Impossible: %s", reason)
                 ctx.sched.pop()
                 actor.components[Ticket] = ctx.sched.schedule(100, actor)
         case _:

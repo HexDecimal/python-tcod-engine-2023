@@ -9,7 +9,10 @@ from tcod.ecs import Entity, World
 
 import game.map_tools
 import game.mapgen.test
+import game.monsters
 from game import map_attrs
+from game.action import Action
+from game.actions import AttackPlayer
 from game.components import Graphic, Position, Stairway
 from game.map import Map, MapKey
 from game.tags import ChildOf
@@ -75,5 +78,14 @@ def new_cave(world: World, level: int) -> Entity:
     ]
     for entity in features:
         entity.relation_tags[ChildOf] = map
+
+    for _ in range(10):
+        ai_actor = game.monsters.spawn("orc", map, Position(*free_spaces.pop()))
+        ai_actor.components.update(
+            {
+                ("ai", Action): AttackPlayer(),
+            }
+        )
+        ai_actor.components[("attack", int)] = 2
 
     return map

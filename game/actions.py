@@ -121,7 +121,14 @@ class AttackPlayer(Action):
 
     def plan(self, actor: Entity) -> PlanResult:
         """Bump towards the player actor."""
-        targets = list(actor.world.Q.all_of(tags=[IsPlayer], relations=[(ChildOf, actor.relation_tags[ChildOf])]))
+        my_fov = game.actor_tools.compute_fov(actor)
+        targets = [
+            target
+            for target in actor.world.Q.all_of(
+                components=[Position], tags=[IsPlayer], relations=[(ChildOf, actor.relation_tags[ChildOf])]
+            )
+            if my_fov.visible[target.components[Position].yx]
+        ]
         if not targets:
             return Impossible("No visible targets.")
         target = targets[0]
