@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Self
 
 import attrs
+import tcod.ecs.callbacks
 from attrs import Factory, field
 from tcod.ecs import Entity
 
@@ -56,6 +57,17 @@ class Position:
     def yx(self) -> tuple[int, int]:
         """Return an (i, j) tuple, for Numpy indexing."""
         return self.y, self.x
+
+
+@tcod.ecs.callbacks.register_component_changed(component=Position)
+def on_position_changed(entity: Entity, old: Position | None, new: Position | None) -> None:
+    """Replicate Position component values as tags."""
+    if old == new:
+        return
+    if old is not None:
+        entity.tags.remove(old)
+    if new is not None:
+        entity.tags.add(new)
 
 
 @attrs.define(frozen=True)

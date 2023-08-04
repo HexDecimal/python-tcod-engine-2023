@@ -1,6 +1,5 @@
 """Specialized common actions."""
 import random
-from collections.abc import Iterator
 from typing import NamedTuple
 
 from tcod.ecs import Entity
@@ -76,22 +75,22 @@ class UseStairs(Action):
         exit: Entity
         next_map: MapKey
 
-    def iter_stairs(self, map: Entity) -> Iterator[Entity]:
-        yield from map.world.Q.all_of([Stairway], relations=[(ChildOf, map)])
-
     def get_stairs(self, actor: Entity) -> PassageInfo | None:
         world = actor.world
-        actor_pos = actor.components[Position]
         inverse_dir = {"up": "down", "down": "up"}[self.data[str]]
-        for stairs in self.iter_stairs(world[None].components[Context].active_map):
-            if stairs.components[Position] != actor_pos:
-                continue
+        for stairs in world.Q.all_of(
+            components=[Stairway],
+            tags=[actor.components[Position]],
+            relations=[(ChildOf, actor.relation_tag[ChildOf])],
+        ):
             next_map_key = (
                 stairs.components[Stairway].up if self.data[str] == "up" else stairs.components[Stairway].down
             )
             if next_map_key is None:
                 continue
-            for exit_passage in self.iter_stairs(game.map_tools.get_map(world, next_map_key)):
+            for exit_passage in world.Q.all_of(
+                components=[Stairway], relations=[(ChildOf, game.map_tools.get_map(world, next_map_key))]
+            ):
                 print(exit_passage.components[Stairway])
                 if getattr(exit_passage.components[Stairway], inverse_dir) is None:
                     continue

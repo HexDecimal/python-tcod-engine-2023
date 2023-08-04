@@ -24,7 +24,7 @@ class Memory:
     layers: WeakKeyDictionary[Entity, MemoryLayer] = attrs.field(factory=WeakKeyDictionary)
 
 
-@attrs.define()
+@attrs.define(eq=False)
 class ActiveFOV:
     """The current FOV of an actor."""
 
