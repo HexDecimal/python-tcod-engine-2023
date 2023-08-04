@@ -5,7 +5,7 @@ import numpy as np
 import scipy.ndimage  # type: ignore
 import scipy.signal  # type: ignore
 from numpy.typing import NDArray
-from tcod.ecs import Entity, World
+from tcod.ecs import Entity
 
 import game.map_tools
 import game.mapgen.test
@@ -13,10 +13,10 @@ import game.monsters
 from game import map_attrs
 from game.action import Action
 from game.actions import AttackPlayer
-from game.components import Graphic, Position, Stairway
+from game.components import Position
 from game.map import Map, MapKey
-from game.tags import ChildOf
 from game.tiles import TileDB
+from game.travel import force_move, new_stairway
 
 
 def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
@@ -27,12 +27,13 @@ def get_holes(input: NDArray[Any]) -> NDArray[np.bool_]:
     return label != 0  # type: ignore[no-any-return]
 
 
-def new_cave(world: World, level: int) -> Entity:
+def new_cave(map: Entity, level: int) -> Entity:
+    world = map.world
     assert level > 0
     tiles_db = world[None].components[TileDB]
     rng = np.random.default_rng()
 
-    map = game.map_tools.new_map(world, 50, 50)
+    game.map_tools.init_map(map, 50, 50)
     walls = np.zeros((map.components[Map].height - 2, map.components[Map].width - 2), bool)
 
     walls.ravel()[: walls.size * 45 // 100] = 1
@@ -66,18 +67,12 @@ def new_cave(world: World, level: int) -> Entity:
     rng.shuffle(free_spaces_)
     free_spaces = free_spaces_.tolist()
 
-    features = [
-        world.new_entity([Position(*free_spaces.pop()), Graphic(ord(">")), Stairway(down=MapKey(new_cave, level + 1))]),
-        world.new_entity(
-            [
-                Position(*free_spaces.pop()),
-                Graphic(ord("<")),
-                Stairway(up=MapKey(game.mapgen.test.test_map) if level == 1 else MapKey(new_cave, level - 1)),
-            ]
-        ),
-    ]
-    for entity in features:
-        entity.relation_tags[ChildOf] = map
+    force_move(new_stairway(world, "down", MapKey(new_cave, level + 1)), free_spaces.pop(), map)
+    force_move(
+        new_stairway(world, "up", MapKey(game.mapgen.test.test_map) if level == 1 else MapKey(new_cave, level - 1)),
+        free_spaces.pop(),
+        map,
+    )
 
     for _ in range(10):
         ai_actor = game.monsters.spawn("orc", map, Position(*free_spaces.pop()))

@@ -6,7 +6,7 @@ from typing import Any, Concatenate, ParamSpec, TypeVar
 import attrs
 import numpy as np
 from numpy.typing import DTypeLike, NDArray
-from tcod.ecs import Entity, World
+from tcod.ecs import Entity
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -71,7 +71,7 @@ class MapKey:
     generator: Callable[..., Entity]
     kwargs: frozenset[tuple[str, Any]]
 
-    def __init__(self, generator: Callable[Concatenate[World, P], Entity], *args: P.args, **kwargs: P.kwargs) -> None:
+    def __init__(self, generator: Callable[Concatenate[Entity, P], Entity], *args: P.args, **kwargs: P.kwargs) -> None:
         """Initialize a map key with a generator function and all arguments rebound to keywords."""
         signature = inspect.signature(generator)
         signature = signature.replace(parameters=list(signature.parameters.values())[1:])

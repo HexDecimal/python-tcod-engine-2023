@@ -8,7 +8,7 @@ import game.actor_tools
 import game.combat
 import game.map_tools
 from game.action import Action, Impossible, PlanResult, Success
-from game.components import Context, Direction, Position, Stairway
+from game.components import Context, Direction, Position
 from game.map import Map, MapKey
 from game.map_attrs import a_tiles
 from game.tags import ChildOf, IsActor, IsPlayer
@@ -77,23 +77,18 @@ class UseStairs(Action):
 
     def get_stairs(self, actor: Entity) -> PassageInfo | None:
         world = actor.world
+        this_map = actor.relation_tag[ChildOf]
+        direction = self.data[str]
         inverse_dir = {"up": "down", "down": "up"}[self.data[str]]
         for stairs in world.Q.all_of(
-            components=[Stairway],
             tags=[actor.components[Position]],
-            relations=[(ChildOf, actor.relation_tag[ChildOf])],
+            relations=[(ChildOf, this_map), (direction, ...)],
         ):
-            next_map_key = (
-                stairs.components[Stairway].up if self.data[str] == "up" else stairs.components[Stairway].down
-            )
-            if next_map_key is None:
-                continue
+            next_map_key = stairs.relation_tag[direction].uid
+            assert isinstance(next_map_key, MapKey)
             for exit_passage in world.Q.all_of(
-                components=[Stairway], relations=[(ChildOf, game.map_tools.get_map(world, next_map_key))]
+                relations=[(ChildOf, game.map_tools.get_map(world, next_map_key)), (inverse_dir, this_map)],
             ):
-                print(exit_passage.components[Stairway])
-                if getattr(exit_passage.components[Stairway], inverse_dir) is None:
-                    continue
                 return self.PassageInfo(stairs, exit_passage, next_map_key)
         return None
 

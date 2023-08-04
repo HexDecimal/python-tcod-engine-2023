@@ -83,11 +83,5 @@ class Graphic:
     fg: tuple[int, int, int] = (255, 255, 255)
 
 
-@attrs.define(frozen=True, kw_only=True)
-class Stairway:
-    down: MapKey | None = None
-    up: MapKey | None = None
-
-
 class MapDict(dict[MapKey, Entity]):
     pass
