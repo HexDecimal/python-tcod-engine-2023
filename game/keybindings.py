@@ -6,7 +6,7 @@ from typing import Any, Self, TypeVar
 
 import attrs
 import tcod.event
-import toml  # type:ignore[import]
+import toml  # type: ignore[import-untyped]
 
 _Enum = TypeVar("_Enum", bound=enum.Enum)
 

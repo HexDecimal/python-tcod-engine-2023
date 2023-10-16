@@ -40,7 +40,7 @@ jobs:
       - name: Install Ruff
         run: pip install ruff
       - name: Ruff
-        run: ruff . --format=github
+        run: ruff . --output-format=github
 
   mypy:
     runs-on: ubuntu-latest
