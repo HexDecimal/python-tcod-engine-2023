@@ -1,4 +1,5 @@
 """Module for handling movement and position."""
+
 from typing import Literal
 
 from tcod.ecs import Entity, World

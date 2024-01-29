@@ -1,4 +1,5 @@
 """Definitions of common tags and relation tags."""
+
 from __future__ import annotations
 
 ChildOf = "ChildOf"

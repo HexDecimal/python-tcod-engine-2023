@@ -1,4 +1,5 @@
 """The State base class is defined here."""
+
 from __future__ import annotations
 
 from typing import Protocol

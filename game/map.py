@@ -1,4 +1,5 @@
 """Defines the Map class."""
+
 import inspect
 from collections.abc import Callable, Hashable
 from typing import Any, Concatenate, ParamSpec, TypeVar

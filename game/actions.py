@@ -1,4 +1,5 @@
 """Specialized common actions."""
+
 import random
 from typing import NamedTuple
 

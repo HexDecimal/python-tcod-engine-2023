@@ -1,4 +1,5 @@
 """Combat tools and logic."""
+
 from tcod.ecs import Entity
 
 from game.components import Graphic

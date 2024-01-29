@@ -1,4 +1,5 @@
 """Common map attribute definitions."""
+
 import numpy as np
 
 from game.map import MapAttribute

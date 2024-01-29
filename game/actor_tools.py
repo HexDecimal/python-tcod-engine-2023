@@ -1,4 +1,5 @@
 """Tools for working with actors."""
+
 import itertools
 from collections.abc import Iterable
 

@@ -1,4 +1,5 @@
 """Functions for rendering world data to a tcod console."""
+
 import itertools
 from typing import Any
 

@@ -1,4 +1,5 @@
 """Tools for priority-queue turn-based scheduling."""
+
 import heapq
 from collections.abc import Iterable
 from typing import Generic, NamedTuple, TypeVar

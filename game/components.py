@@ -1,4 +1,5 @@
 """Definitions of common component types."""
+
 from __future__ import annotations
 
 from typing import Self
