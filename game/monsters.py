@@ -1,4 +1,5 @@
 """Monster database manager."""
+
 from __future__ import annotations
 
 import tomllib

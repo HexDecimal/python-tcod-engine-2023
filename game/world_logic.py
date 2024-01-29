@@ -1,4 +1,5 @@
 """Tools for running world simulations."""
+
 import logging
 
 from tcod.ecs import Entity, World

@@ -1,4 +1,5 @@
 """Message log management."""
+
 import attrs
 
 

@@ -1,4 +1,5 @@
 """Cellular automata cave generator."""
+
 from typing import Any
 
 import numpy as np
