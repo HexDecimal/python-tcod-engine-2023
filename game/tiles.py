@@ -25,7 +25,7 @@ class TileDB:
     The name `""` exists as a null key returning the id of `0`.
     """
 
-    __slots__ = ("data", "_identifiers", "_names", "__weakref__")
+    __slots__ = ("__weakref__", "_identifiers", "_names", "data")
 
     def __init__(self, tiles: Iterable[dict[str, Any]] = ()) -> None:
         """Initialize a tile database."""
