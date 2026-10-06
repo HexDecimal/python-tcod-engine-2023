@@ -48,7 +48,7 @@ class Bind:
         - self value is (bool, bool): True if modifier keys exactly match.
         """
         assert name != "shift"
-        self_value: None | bool | tuple[bool, bool] = getattr(self, name)
+        self_value: bool | tuple[bool, bool] | None = getattr(self, name)
         if self_value is None:
             return True
         upper_name = name.upper()
